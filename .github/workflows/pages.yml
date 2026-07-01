@@ -1,0 +1,43 @@
+# Deploys the static site to GitHub Pages.
+# One-time setup: repo Settings → Pages → "Build and deployment" →
+# Source: "GitHub Actions". After that, every push to the branches below
+# publishes the site automatically.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - claude/sparkleclean-marketing-site-yf8ohs
+  workflow_dispatch: {}   # lets you trigger a deploy manually from the Actions tab
+
+# Permissions needed for the Pages deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deploy at a time; don't cancel an in-progress run
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # The site is plain static files at the repo root — nothing to build.
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
