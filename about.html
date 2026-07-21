@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>About — ounce</title>
+  <meta name="description" content="ounce is a clothing line that measures itself in grams. Buy less, heavier.">
+  <meta name="theme-color" content="#E9E7E1">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body data-page="about">
+  <main class="page">
+    <section class="wrap editorial">
+      <p class="lede" data-reveal>We make clothes<br>you can <span class="dim">feel the<br>weight of.</span></p>
+    </section>
+
+    <div class="units" style="border-color:var(--line)">
+      <div class="units__track">
+        <span style="color:var(--ash)">EST. LISBON <b style="color:var(--ink)">MMXXV</b></span>
+        <span style="color:var(--ash)">DIRECT TO YOU</span>
+        <span style="color:var(--ash)">SMALL RUNS</span>
+        <span style="color:var(--ash)">NO SEASONS · <b style="color:var(--ink)">ONLY WEIGHT</b></span>
+        <span style="color:var(--ash)">MENDED, NOT REPLACED</span>
+      </div>
+    </div>
+
+    <section class="wrap about-grid">
+      <div class="prose" data-reveal>
+        <p>Ounce began with a scale and a suspicion. We kept noticing that the garments we reached for — the ones that outlived every trend — all had one thing in common. They were heavy. Denser cloth, more of it, held together better. So we made weight the whole point.</p>
+        <p>Every piece we release is weighed and its mass printed on the label, in grams. It's a receipt for substance: proof that when you pay for an ounce hoodie, you're paying for cloth, not marketing. We don't do logos, seasons, or noise. We do a small number of blank, considered things and make them as well as we can afford to.</p>
+        <p>They're cut in short runs by makers we can call by name — mills in Japan, knitters in Scotland, a small factory outside Lisbon. Sold straight to you so the money goes into the cloth. And when yours finally wears through, write to us; we'd rather help you mend it than sell you another.</p>
+      </div>
+      <div data-reveal>
+        <img src="" data-about-art alt="ounce study" style="width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--paper-2)">
+        <p class="mono" style="color:var(--ash);margin-top:12px">FIG. 01 — MASS AS METHOD</p>
+      </div>
+    </section>
+
+    <section class="wrap" style="padding-bottom:clamp(40px,8vw,90px)">
+      <div class="mono" style="color:var(--ash);padding-bottom:20px">The rules we weigh against</div>
+      <div class="manifesto" data-reveal>
+        <div><span class="n">01</span><div><h4>Weight is honesty.</h4><p>If it matters, it should have mass. We print the grams so you can hold us to it.</p></div></div>
+        <div><span class="n">02</span><div><h4>Blank on purpose.</h4><p>No logos, no slogans. The garment is the statement; you are the rest of it.</p></div></div>
+        <div><span class="n">03</span><div><h4>Fewer, better, kept.</h4><p>We'd rather sell you one thing for a decade than ten things for a year.</p></div></div>
+        <div><span class="n">04</span><div><h4>Made by names.</h4><p>Short runs, real makers, fair terms. Direct to you so the value stays in the cloth.</p></div></div>
+        <div><span class="n">05</span><div><h4>Mended, not replaced.</h4><p>Repairs before replacements. The heaviest thing a garment can carry is time.</p></div></div>
+      </div>
+    </section>
+
+    <section class="wrap editorial" style="text-align:center">
+      <p class="lede" style="margin-inline:auto" data-reveal>Buy less.<br><span style="color:var(--signal)">Heavier.</span></p>
+      <a class="btn" style="margin-top:28px" href="/shop.html">Enter the shop →</a>
+    </section>
+  </main>
+
+  <script src="/assets/js/products.js"></script>
+  <script src="/assets/js/store.js"></script>
+  <script src="/assets/js/ui.js"></script>
+  <script>
+    const el = document.querySelector("[data-about-art]");
+    if (el) el.src = OUNCE.artURI(OUNCE.getProduct("oz-01"), 1);
+  </script>
+</body>
+</html>

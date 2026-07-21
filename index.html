@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ounce — everything has weight</title>
+  <meta name="description" content="OUNCE — a clothing line measured in grams. Heavyweight essentials, cut clean, sold blank. Everything has weight.">
+  <meta name="theme-color" content="#0B0B0A">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="ounce — everything has weight">
+  <meta property="og:description" content="A clothing line measured in grams. Heavyweight essentials, cut clean, sold blank.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/assets/img/og.svg">
+  <link rel="preconnect" href="/">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link rel="stylesheet" href="/assets/css/landing.css">
+</head>
+<body class="void" data-page="">
+
+  <!-- ============ HERO / THE WEIGHING ROOM ============ -->
+  <section class="hero">
+    <canvas id="field" aria-hidden="true"></canvas>
+
+    <div class="hero__topline">
+      <span>OUNCE® · SUPPLY CO.</span>
+      <div class="hero__readout">
+        <span>ROOM MASS <b data-mass-readout>0 g</b></span>
+        <span>EST · MMXXV</span>
+      </div>
+    </div>
+
+    <div class="hero__type">
+      <h1 class="hero__mark">ounce<span class="oz">oz</span></h1>
+    </div>
+
+    <div class="hero__foot">
+      <p class="hero__blurb">A clothing line measured in grams. <span class="dim">Heavyweight essentials, cut clean, sold blank — everything here has weight.</span></p>
+      <div class="hero__cta">
+        <a class="btn btn--void" href="/shop.html">Enter the shop</a>
+        <a class="btn" style="background:transparent;color:var(--chalk);box-shadow:inset 0 0 0 1px var(--void-line)" href="/lookbook.html">Lookbook</a>
+      </div>
+    </div>
+
+    <div class="hint">Move · drag · drop a weight</div>
+  </section>
+
+  <!-- ============ UNIT TICKER ============ -->
+  <div class="units">
+    <div class="units__track">
+      <span>1 OUNCE = <b>28.349523 G</b></span>
+      <span>16 OZ = <b>1 LB</b></span>
+      <span>1 TROY OZ = <b>31.103 G</b></span>
+      <span>MADE TO <b>OUTLIVE</b></span>
+      <span>NO LOGOS · <b>ONLY MASS</b></span>
+      <span>DENIM · <b>14 OZ</b></span>
+      <span>SHIPPED FROM <b>LISBON</b></span>
+      <span>1 OUNCE = <b>28.349523 G</b></span>
+    </div>
+  </div>
+
+  <!-- ============ STATEMENT ============ -->
+  <section class="act act--paper">
+    <div class="wrap split">
+      <div class="split__big" data-reveal>Weight<br>is the<br><em>proof.</em></div>
+      <div class="split__body" data-reveal>
+        <span class="label">01 — The idea</span>
+        We started with a simple bias: the clothes that last are the ones you can feel.
+        Denser cloth, cleaner cuts, nothing shouting. Each ounce piece lists its mass in grams
+        on the label — a receipt for the substance you're paying for. Buy less. Feel more.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ THREE DROPS ============ -->
+  <section class="act">
+    <div class="wrap">
+      <div class="rail-head" data-reveal>
+        <h2>The Weights</h2>
+        <a href="/shop.html">All pieces →</a>
+      </div>
+      <div class="drops">
+        <a class="drop" href="/shop.html?c=outerwear" data-reveal>
+          <div class="drop__n">DROP 01</div>
+          <div class="drop__title">Heavy<br>Layers</div>
+          <div class="drop__meta"><span>Outerwear</span><span class="oz">480—890 g</span></div>
+        </a>
+        <a class="drop" href="/shop.html?c=knitwear" data-reveal>
+          <div class="drop__n">DROP 02</div>
+          <div class="drop__title">Spun<br>&amp; Fashioned</div>
+          <div class="drop__meta"><span>Knitwear</span><span class="oz">7-gauge</span></div>
+        </a>
+        <a class="drop" href="/shop.html?c=accessories" data-reveal>
+          <div class="drop__n">DROP 03</div>
+          <div class="drop__title">The<br>Lightest</div>
+          <div class="drop__meta"><span>Accessories</span><span class="oz">40—90 g</span></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURED RAIL ============ -->
+  <section class="act" style="padding-top:0">
+    <div class="wrap">
+      <div class="rail-head" data-reveal>
+        <h2>Selected</h2>
+        <a href="/shop.html">Shop all →</a>
+      </div>
+      <div class="grid" data-featured-rail data-reveal></div>
+    </div>
+  </section>
+
+  <!-- ============ CLOSING STATEMENT ============ -->
+  <section class="act act--paper">
+    <div class="wrap split">
+      <div class="split__body" data-reveal>
+        <span class="label">02 — The promise</span>
+        Made in small runs in Portugal, Japan, Scotland and Italy. Sold direct, priced by what it costs
+        to do right, returned free within thirty days. When it finally wears through, we'll help you mend it.
+      </div>
+      <div class="split__big" style="text-align:right" data-reveal>Own<br>less,<br><em>heavier.</em></div>
+    </div>
+  </section>
+
+  <script src="/assets/js/products.js"></script>
+  <script src="/assets/js/store.js"></script>
+  <script src="/assets/js/ui.js"></script>
+  <script src="/assets/js/landing.js"></script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+/* ============================================================
+   OUNCE — landing (the void)
+   An abstract weighing room. Everything has mass.
+   ============================================================ */
+
+.void { background: var(--void); color: var(--chalk); }
+.void ::selection { background: var(--signal); color: #fff; }
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--gutter);
+  padding-bottom: clamp(24px, 5vw, 64px);
+}
+
+/* the interactive canvas of falling / floating weights */
+#field { position: absolute; inset: 0; z-index: 1; display: block; }
+
+/* huge type, cut by mix-blend so the field shows through */
+.hero__type { position: relative; z-index: 3; pointer-events: none; }
+.hero__mark {
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 0.78;
+  font-size: clamp(84px, 27vw, 460px);
+  margin: 0;
+  mix-blend-mode: exclusion;
+  color: #fff;
+}
+.hero__mark span { display: inline-block; }
+.hero__mark .oz {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 0.16em;
+  letter-spacing: 0.05em;
+  vertical-align: super;
+  color: var(--signal);
+  mix-blend-mode: normal;
+}
+
+.hero__topline {
+  position: absolute; top: calc(var(--nav-h) + 8px); left: var(--gutter); right: var(--gutter);
+  z-index: 3; display: flex; justify-content: space-between; gap: 16px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--chalk-dim);
+  pointer-events: none;
+}
+.hero__readout { display: flex; gap: 20px; }
+.hero__readout b { color: var(--chalk); font-weight: 400; }
+
+.hero__foot {
+  position: relative; z-index: 3;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+  margin-top: 24px;
+}
+.hero__blurb { max-width: 34ch; font-size: clamp(15px, 1.8vw, 20px); letter-spacing: -0.01em; line-height: 1.25; color: var(--chalk); }
+.hero__blurb .dim { color: var(--chalk-dim); }
+.hero__cta { display: flex; gap: 10px; pointer-events: auto; }
+
+.hint { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 3; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--chalk-dim); animation: pulse 2.6s var(--ease) infinite; pointer-events: none; }
+@keyframes pulse { 0%,100% { opacity: 0.35; } 50% { opacity: 1; } }
+
+/* ---------- second act: the scale ---------- */
+.act { background: var(--void); color: var(--chalk); padding: clamp(60px, 12vw, 180px) 0; position: relative; }
+.act--paper { background: var(--paper); color: var(--ink); }
+
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 5vw, 80px); align-items: center; }
+.split__big { font-weight: 700; letter-spacing: -0.04em; line-height: 0.9; font-size: clamp(40px, 8vw, 120px); }
+.split__big em { font-style: normal; color: var(--signal); }
+.split__body { font-size: clamp(15px, 1.8vw, 19px); line-height: 1.4; max-width: 42ch; }
+.split__body .label { display: block; margin-bottom: 16px; }
+
+/* index feature strip — three drops */
+.drops { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--void-line); margin-top: clamp(30px, 6vw, 70px); }
+.drop { background: var(--void); padding: 28px 24px; min-height: 340px; display: flex; flex-direction: column; justify-content: space-between; transition: background 0.5s var(--ease); position: relative; overflow: hidden; }
+.drop:hover { background: var(--void-2); }
+.drop__n { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--chalk-dim); }
+.drop__title { font-size: clamp(24px, 3vw, 40px); font-weight: 700; letter-spacing: -0.03em; line-height: 0.95; }
+.drop__meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--chalk-dim); display: flex; justify-content: space-between; }
+.drop .oz { color: var(--signal); }
+
+/* big ticker of unit conversions */
+.units { border-block: 1px solid var(--void-line); padding: 16px 0; overflow: hidden; white-space: nowrap; }
+.units__track { display: inline-block; animation: slide 32s linear infinite; }
+.units span { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--chalk-dim); padding: 0 28px; }
+.units span b { color: var(--chalk); font-weight: 400; }
+
+/* featured product rail on landing */
+.rail-head { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 24px; }
+.rail-head h2 { font-size: clamp(28px, 4vw, 56px); font-weight: 700; letter-spacing: -0.04em; }
+.rail-head a { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+.rail-head a:hover { color: var(--signal); }
+
+.void .card { background: var(--void); }
+.void .card__media { background: var(--void-2); }
+.void .card__name, .void .card__price { color: var(--chalk); }
+.void .card__sub { color: var(--chalk-dim); }
+.void .grid { background: var(--void-line); }
+.void .card__tag { background: var(--chalk); color: var(--void); }
+
+@media (max-width: 860px) {
+  .split { grid-template-columns: 1fr; }
+  .drops { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .hero__topline { display: none; }
+  .hero { padding-bottom: 40px; }
+}

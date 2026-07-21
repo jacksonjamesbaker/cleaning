@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Lookbook — ounce</title>
+  <meta name="description" content="ounce — Volume 01. An abstract study in weight and cloth.">
+  <meta name="theme-color" content="#E9E7E1">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body data-page="lookbook">
+  <main class="page">
+    <section class="wrap editorial">
+      <div class="mono" style="display:flex;justify-content:space-between;color:var(--ash)">
+        <span>Volume 01</span><span>Study of Mass</span><span>MMXXV</span>
+      </div>
+      <p class="lede" style="margin-top:32px" data-reveal>Cloth, <span class="dim">held still</span><br>long enough to<br>feel its weight.</p>
+    </section>
+
+    <!-- generative editorial grid -->
+    <div class="wrap">
+      <div class="look-grid">
+        <div class="look s7 t169" data-art="oz-01:0" data-cap="OZ—01 · Heavyweight"></div>
+        <div class="look s5 t45" data-art="oz-04:2" data-cap="OZ—04 · Shell"></div>
+        <div class="look s4 t34" data-art="oz-02:1" data-cap="OZ—02 · 14oz"></div>
+        <div class="look s4 t34" data-art="oz-06:0" data-cap="OZ—06 · Knit"></div>
+        <div class="look s4 t34" data-art="oz-08:1" data-cap="OZ—08 · Overshirt"></div>
+      </div>
+    </div>
+
+    <section class="wrap editorial" style="text-align:center">
+      <p class="lede" style="margin-inline:auto" data-reveal>Everything blank.<br><span class="dim">Nothing empty.</span></p>
+    </section>
+
+    <div class="wrap">
+      <div class="look-grid">
+        <div class="look s6 t45" data-art="oz-05:0" data-cap="OZ—05 · Ballast"></div>
+        <div class="look s6 t45" data-art="oz-03:1" data-cap="OZ—03 · Gram Tee"></div>
+        <div class="look s12 t169 look--wide" data-art="oz-01:1" data-cap="Bone on bone"></div>
+        <div class="look s5 t34" data-art="oz-07:0" data-cap="OZ—07 · Troy"></div>
+        <div class="look s7 t45" data-art="oz-10:2" data-cap="OZ—10 · Standard"></div>
+      </div>
+    </div>
+
+    <section class="wrap editorial" style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap">
+      <p class="lede" data-reveal>Shot in <span class="dim">available light,<br>Lisbon.</span></p>
+      <a class="btn" href="/shop.html">Shop the volume →</a>
+    </section>
+  </main>
+
+  <script src="/assets/js/products.js"></script>
+  <script src="/assets/js/store.js"></script>
+  <script src="/assets/js/ui.js"></script>
+  <script>
+    // fill the editorial grid with generative artwork
+    document.querySelectorAll("[data-art]").forEach((el) => {
+      const [id, v] = el.dataset.art.split(":");
+      const p = OUNCE.getProduct(id);
+      if (!p) return;
+      const img = document.createElement("img");
+      img.src = OUNCE.artURI(p, Number(v) || 0);
+      img.alt = p.name; img.loading = "lazy";
+      el.appendChild(img);
+      if (el.dataset.cap) {
+        const c = document.createElement("span");
+        c.className = "look__cap"; c.textContent = el.dataset.cap;
+        el.appendChild(c);
+      }
+    });
+  </script>
+</body>
+</html>

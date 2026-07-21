@@ -1,0 +1,13 @@
+{
+  "name": "ounce",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OUNCE — a clothing webshop measured in grams. Static storefront + serverless Stripe checkout.",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve ."
+  },
+  "dependencies": {
+    "stripe": "^16.12.0"
+  }
+}
