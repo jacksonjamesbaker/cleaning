@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ounce — everything has weight</title>
+<meta name="description" content="OUNCE — a clothing line measured in grams. Heavyweight essentials, cut clean, sold blank. Everything has weight.">
+<meta name="theme-color" content="#0B0B0A">
+<meta property="og:title" content="ounce — everything has weight">
+<meta property="og:description" content="A clothing line measured in grams. Heavyweight essentials, cut clean, sold blank.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%230B0B0A%22%2F%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2254%22%20r%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23EDEBE4%22%20stroke-width%3D%224%22%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2263%22%20text-anchor%3D%22middle%22%20font-family%3D%22monospace%22%20font-size%3D%2226%22%20fill%3D%22%23E8451F%22%3Eoz%3C%2Ftext%3E%3C%2Fsvg%3E" type="image/svg+xml">
+<style>
+/* ============================================================
+   OUNCE — design system
+   A blend of curatorial restraint and abstract irreverence.
+   No frameworks. No build step. Just weight.
+   ============================================================ */
+
+:root {
+  /* palette — paper world (shop) */
+  --paper: #E9E7E1;
+  --paper-2: #F3F1EB;
+  --ink: #141412;
+  --ash: #75726B;
+  --line: rgba(20, 20, 18, 0.16);
+  --line-2: rgba(20, 20, 18, 0.08);
+  --signal: #E8451F;          /* the one acid accent — used sparingly */
+  --signal-ink: #fff;
+
+  /* palette — void world (landing) */
+  --void: #0B0B0A;
+  --void-2: #141413;
+  --chalk: #EDEBE4;
+  --chalk-dim: #8B887F;
+  --void-line: rgba(237, 235, 228, 0.16);
+
+  /* type */
+  --sans: "Helvetica Neue", Helvetica, Arial, "Inter", system-ui, sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, "Roboto Mono", monospace;
+
+  /* metrics */
+  --gutter: clamp(16px, 3.2vw, 40px);
+  --nav-h: 58px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 0.6s;
+
+  --maxw: 1680px;
+}
+
+/* ---------- reset ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+ul { list-style: none; margin: 0; padding: 0; }
+h1, h2, h3, h4, p { margin: 0; }
+:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
+
+::selection { background: var(--signal); color: var(--signal-ink); }
+
+/* film grain overlay — subtle texture across everything */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- type utilities ---------- */
+.mono {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ash);
+}
+.display {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 0.9;
+}
+
+/* ---------- layout ---------- */
+.wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding-inline: var(--gutter); }
+.bleed { width: 100%; }
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--gutter);
+  mix-blend-mode: difference;
+  color: #fff;
+}
+.nav a, .nav button { color: #fff; }
+.nav__brand {
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.nav__brand sup { font-family: var(--mono); font-size: 9px; font-weight: 400; letter-spacing: 0.1em; }
+.nav__links { display: flex; gap: 22px; align-items: center; }
+.nav__links a {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  position: relative;
+}
+.nav__links a::after {
+  content: ""; position: absolute; left: 0; right: 100%; bottom: -4px;
+  height: 1px; background: currentColor; transition: right var(--dur) var(--ease);
+}
+.nav__links a:hover::after, .nav__links a[aria-current]::after { right: 0; }
+.nav__right { display: flex; gap: 20px; align-items: center; }
+.cart-btn { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; display: inline-flex; gap: 6px; align-items: center; }
+.cart-btn__count { min-width: 17px; height: 17px; padding: 0 4px; display: inline-grid; place-items: center; border-radius: 999px; background: var(--signal); color: #fff; font-size: 10px; line-height: 1; transform: scale(var(--pop, 1)); transition: transform 0.3s var(--ease); }
+.cart-btn__count[data-empty="true"] { opacity: 0.4; background: transparent; box-shadow: inset 0 0 0 1px currentColor; }
+
+.nav__burger { display: none; flex-direction: column; gap: 4px; width: 22px; }
+.nav__burger span { height: 1.5px; background: #fff; width: 100%; transition: transform 0.4s var(--ease), opacity 0.3s; }
+
+/* mobile drawer */
+.drawer {
+  position: fixed; inset: 0; z-index: 999;
+  background: var(--void); color: var(--chalk);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: var(--gutter);
+  transform: translateY(-100%);
+  transition: transform 0.7s var(--ease);
+  visibility: hidden;
+}
+.drawer[data-open="true"] { transform: translateY(0); visibility: visible; }
+.drawer a { font-size: clamp(38px, 12vw, 88px); font-weight: 700; letter-spacing: -0.04em; line-height: 1.02; display: block; padding: 4px 0; }
+.drawer a span { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; vertical-align: super; color: var(--chalk-dim); }
+.drawer__meta { margin-top: auto; display: flex; justify-content: space-between; }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 15px 26px; border-radius: 999px;
+  background: var(--ink); color: var(--paper);
+  transition: background 0.4s var(--ease), color 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.btn:hover { background: var(--signal); color: #fff; }
+.btn:active { transform: scale(0.97); }
+.btn--ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+.btn--ghost:hover { background: var(--ink); color: var(--paper); box-shadow: none; }
+.btn--block { width: 100%; }
+.btn--void { background: var(--chalk); color: var(--void); }
+.btn--void:hover { background: var(--signal); color: #fff; }
+.btn[disabled] { opacity: 0.4; pointer-events: none; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer { background: var(--void); color: var(--chalk); padding: clamp(48px, 8vw, 120px) 0 32px; margin-top: clamp(60px, 10vw, 160px); position: relative; }
+.footer__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; }
+.footer__word { font-weight: 700; letter-spacing: -0.05em; line-height: 0.82; font-size: clamp(64px, 16vw, 260px); margin: 0 0 48px; }
+.footer__word .oz { color: var(--signal); }
+.footer h4 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--chalk-dim); margin-bottom: 16px; }
+.footer li { margin-bottom: 8px; }
+.footer a:hover { color: var(--signal); }
+.footer__news { display: flex; border-bottom: 1px solid var(--void-line); }
+.footer__news input { flex: 1; background: none; border: 0; color: var(--chalk); font-family: var(--mono); font-size: 12px; padding: 10px 0; letter-spacing: 0.05em; }
+.footer__news input::placeholder { color: var(--chalk-dim); }
+.footer__news button { color: var(--chalk); font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; }
+.footer__news button:hover { color: var(--signal); }
+.footer__base { display: flex; justify-content: space-between; margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--void-line); color: var(--chalk-dim); }
+
+/* ============================================================
+   SHOP / PRODUCT GRID
+   ============================================================ */
+.page { padding-top: var(--nav-h); }
+
+.shop-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: clamp(40px, 8vw, 96px) 0 clamp(24px, 3vw, 40px);
+  border-bottom: 1px solid var(--line);
+  gap: 24px; flex-wrap: wrap;
+}
+.shop-head h1 { font-size: clamp(48px, 11vw, 150px); font-weight: 700; letter-spacing: -0.05em; line-height: 0.85; }
+.shop-head__meta { text-align: right; max-width: 340px; }
+
+.filters { display: flex; gap: 8px; flex-wrap: wrap; padding: 20px 0; border-bottom: 1px solid var(--line); position: sticky; top: var(--nav-h); background: var(--paper); z-index: 50; }
+.filters__spacer { flex: 1; }
+.chip { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 14px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); color: var(--ash); transition: all 0.3s var(--ease); }
+.chip[data-active="true"] { background: var(--ink); color: var(--paper); box-shadow: none; }
+.chip:hover { color: var(--ink); }
+.chip[data-active="true"]:hover { color: var(--paper); }
+
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line-2); }
+.grid--3 { grid-template-columns: repeat(3, 1fr); }
+
+.card { background: var(--paper); position: relative; display: flex; flex-direction: column; }
+.card__media { position: relative; aspect-ratio: 4/5; overflow: hidden; background: var(--paper-2); }
+.card__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease), opacity 0.4s; }
+.card:hover .card__media img { transform: scale(1.04); }
+.card__media .alt { opacity: 0; }
+.card:hover .card__media .alt { opacity: 1; }
+.card__tag { position: absolute; top: 12px; left: 12px; z-index: 2; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; background: var(--ink); color: var(--paper); padding: 4px 8px; }
+.card__tag--sold { background: var(--ash); }
+.card__quick { position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 2; transform: translateY(10px); opacity: 0; transition: all 0.5s var(--ease); }
+.card:hover .card__quick { transform: translateY(0); opacity: 1; }
+.card__info { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 14px 20px; gap: 12px; }
+.card__name { font-size: 14px; font-weight: 500; letter-spacing: -0.01em; }
+.card__sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ash); text-transform: uppercase; margin-top: 3px; }
+.card__price { font-family: var(--mono); font-size: 12px; white-space: nowrap; }
+
+/* ============================================================
+   PRODUCT DETAIL
+   ============================================================ */
+.pdp { display: grid; grid-template-columns: 1.5fr 1fr; gap: 0; min-height: 100vh; }
+.pdp__gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line-2); border-right: 1px solid var(--line); }
+.pdp__shot { aspect-ratio: 4/5; background: var(--paper-2); position: relative; overflow: hidden; }
+.pdp__shot:first-child { grid-column: 1 / -1; aspect-ratio: 16/12; }
+.pdp__shot img { width: 100%; height: 100%; object-fit: cover; }
+.pdp__panel { position: sticky; top: var(--nav-h); align-self: start; height: calc(100vh - var(--nav-h)); overflow-y: auto; padding: clamp(28px, 4vw, 56px) clamp(24px, 3.5vw, 56px); display: flex; flex-direction: column; }
+.pdp__eyebrow { display: flex; justify-content: space-between; margin-bottom: 28px; }
+.pdp__title { font-size: clamp(34px, 4.5vw, 58px); font-weight: 700; letter-spacing: -0.04em; line-height: 0.92; margin-bottom: 14px; }
+.pdp__price { font-family: var(--mono); font-size: 15px; margin-bottom: 28px; }
+.pdp__desc { color: #2c2c28; max-width: 46ch; margin-bottom: 32px; }
+.pdp__spec { border-top: 1px solid var(--line); }
+.pdp__spec div { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.pdp__spec dt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ash); }
+.pdp__spec dd { margin: 0; font-size: 13px; }
+
+.sizes { display: flex; gap: 8px; flex-wrap: wrap; margin: 24px 0; }
+.size { min-width: 46px; height: 46px; padding: 0 10px; display: grid; place-items: center; font-family: var(--mono); font-size: 12px; box-shadow: inset 0 0 0 1px var(--line); transition: all 0.25s var(--ease); border-radius: 2px; }
+.size:hover { box-shadow: inset 0 0 0 1px var(--ink); }
+.size[data-active="true"] { background: var(--ink); color: var(--paper); box-shadow: none; }
+.size[data-oos="true"] { color: var(--line); text-decoration: line-through; pointer-events: none; }
+.size-note { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; color: var(--signal); text-transform: uppercase; min-height: 14px; margin-bottom: 8px; }
+
+.pdp__buy { margin-top: auto; padding-top: 24px; }
+
+/* related */
+.related { padding: clamp(48px, 8vw, 110px) 0 0; }
+.related h3 { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ash); padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 1px; }
+
+/* ============================================================
+   CART (slide-over)
+   ============================================================ */
+.cart-veil { position: fixed; inset: 0; z-index: 1100; background: rgba(11,11,10,0.4); opacity: 0; visibility: hidden; transition: opacity 0.5s var(--ease); backdrop-filter: blur(2px); }
+.cart-veil[data-open="true"] { opacity: 1; visibility: visible; }
+.cart-panel { position: fixed; top: 0; right: 0; bottom: 0; z-index: 1101; width: min(440px, 100vw); background: var(--paper); transform: translateX(100%); transition: transform 0.6s var(--ease); display: flex; flex-direction: column; }
+.cart-panel[data-open="true"] { transform: translateX(0); }
+.cart-panel__head { display: flex; justify-content: space-between; align-items: center; padding: 20px var(--gutter); border-bottom: 1px solid var(--line); }
+.cart-panel__head h3 { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
+.cart-close { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+.cart-items { flex: 1; overflow-y: auto; padding: 0 var(--gutter); }
+.cart-empty { padding: 60px 0; text-align: center; color: var(--ash); }
+.cart-empty .label { display: block; margin-bottom: 20px; }
+.cart-line { display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; padding: 20px 0; border-bottom: 1px solid var(--line); align-items: start; }
+.cart-line__media { aspect-ratio: 4/5; background: var(--paper-2); overflow: hidden; }
+.cart-line__media img, .cart-line__media svg { width: 100%; height: 100%; object-fit: cover; }
+.cart-line__name { font-size: 13px; font-weight: 500; }
+.cart-line__meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ash); margin-top: 4px; }
+.cart-line__qty { display: inline-flex; align-items: center; gap: 12px; margin-top: 10px; box-shadow: inset 0 0 0 1px var(--line); border-radius: 999px; padding: 4px 10px; }
+.cart-line__qty button { font-family: var(--mono); font-size: 14px; line-height: 1; width: 14px; }
+.cart-line__qty span { font-family: var(--mono); font-size: 12px; min-width: 12px; text-align: center; }
+.cart-line__price { font-family: var(--mono); font-size: 12px; text-align: right; }
+.cart-line__rm { display: block; font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ash); margin-top: 10px; text-align: right; }
+.cart-line__rm:hover { color: var(--signal); }
+.cart-foot { padding: 20px var(--gutter) calc(20px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
+.cart-foot__row { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.cart-foot__row--total { font-size: 16px; color: var(--ink); margin: 14px 0 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.cart-foot__note { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.05em; color: var(--ash); text-align: center; margin-top: 12px; text-transform: uppercase; }
+
+/* ============================================================
+   EDITORIAL / LOOKBOOK / ABOUT
+   ============================================================ */
+.editorial { padding: clamp(40px, 8vw, 90px) 0; }
+.lede { font-size: clamp(26px, 4.5vw, 62px); font-weight: 500; letter-spacing: -0.03em; line-height: 1.02; max-width: 20ch; }
+.lede .dim { color: var(--ash); }
+
+.look-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1px; background: var(--line-2); margin-top: 1px; }
+.look { background: var(--paper-2); overflow: hidden; position: relative; }
+.look img { width: 100%; height: 100%; object-fit: cover; }
+.look__cap { position: absolute; bottom: 12px; left: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; mix-blend-mode: difference; }
+.s2 { grid-column: span 2; } .s3 { grid-column: span 3; } .s4 { grid-column: span 4; } .s5 { grid-column: span 5; } .s6 { grid-column: span 6; } .s7 { grid-column: span 7; } .s8 { grid-column: span 8; }
+.t45 { aspect-ratio: 4/5; } .t11 { aspect-ratio: 1/1; } .t169 { aspect-ratio: 16/9; } .t34 { aspect-ratio: 3/4; }
+
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 5vw, 90px); align-items: start; padding: clamp(30px, 6vw, 80px) 0; }
+.prose p { margin-bottom: 20px; max-width: 60ch; color: #2b2b27; font-size: 16px; line-height: 1.6; }
+.prose p:first-child::first-letter { font-size: 3.4em; font-weight: 700; float: left; line-height: 0.8; padding: 6px 10px 0 0; }
+.manifesto { border-top: 1px solid var(--line); }
+.manifesto div { display: grid; grid-template-columns: 40px 1fr; gap: 20px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+.manifesto .n { font-family: var(--mono); font-size: 11px; color: var(--signal); }
+.manifesto h4 { font-size: clamp(18px, 2.4vw, 26px); font-weight: 600; letter-spacing: -0.02em; }
+.manifesto p { color: var(--ash); font-size: 14px; margin-top: 6px; max-width: 52ch; }
+
+/* marquee */
+.marquee { overflow: hidden; border-block: 1px solid var(--line); padding: 14px 0; white-space: nowrap; }
+.marquee__track { display: inline-block; animation: slide 28s linear infinite; }
+.marquee span { font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 24px; }
+.marquee span .oz { color: var(--signal); }
+@keyframes slide { to { transform: translateX(-50%); } }
+
+/* reveal-on-scroll */
+[data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); }
+[data-reveal].in { opacity: 1; transform: none; }
+
+/* toast */
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translate(-50%, 30px); z-index: 1200; background: var(--ink); color: var(--paper); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 12px 20px; border-radius: 999px; opacity: 0; transition: all 0.5s var(--ease); pointer-events: none; }
+.toast[data-show="true"] { opacity: 1; transform: translate(-50%, 0); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1080px) {
+  .grid { grid-template-columns: repeat(3, 1fr); }
+  .footer__word { font-size: 22vw; }
+}
+@media (max-width: 860px) {
+  .nav__links { display: none; }
+  .nav__burger { display: flex; }
+  .pdp { grid-template-columns: 1fr; }
+  .pdp__gallery { border-right: 0; border-bottom: 1px solid var(--line); }
+  .pdp__panel { position: static; height: auto; }
+  .grid, .grid--3 { grid-template-columns: repeat(2, 1fr); }
+  .footer__grid { grid-template-columns: 1fr; gap: 28px; }
+  .about-grid { grid-template-columns: 1fr; }
+  .look-grid { grid-template-columns: repeat(6, 1fr); }
+  .s5, .s7, .s8 { grid-column: span 6; } .s3, .s4 { grid-column: span 3; }
+}
+@media (max-width: 520px) {
+  .grid, .grid--3 { grid-template-columns: repeat(2, 1fr); gap: 1px; }
+  .shop-head__meta { text-align: left; }
+  .look-grid { grid-template-columns: repeat(2, 1fr); }
+  .s2, .s3, .s4, .s5, .s6 { grid-column: span 1; }
+  .look--wide { grid-column: span 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  [data-reveal] { opacity: 1; transform: none; }
+}
+
+/* ============================================================
+   OUNCE — landing (the void)
+   An abstract weighing room. Everything has mass.
+   ============================================================ */
+
+.void { background: var(--void); color: var(--chalk); }
+.void ::selection { background: var(--signal); color: #fff; }
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--gutter);
+  padding-bottom: clamp(24px, 5vw, 64px);
+}
+
+/* the interactive canvas of falling / floating weights */
+#field { position: absolute; inset: 0; z-index: 1; display: block; }
+
+/* huge type, cut by mix-blend so the field shows through */
+.hero__type { position: relative; z-index: 3; pointer-events: none; }
+.hero__mark {
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 0.78;
+  font-size: clamp(84px, 27vw, 460px);
+  margin: 0;
+  mix-blend-mode: exclusion;
+  color: #fff;
+}
+.hero__mark span { display: inline-block; }
+.hero__mark .oz {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 0.16em;
+  letter-spacing: 0.05em;
+  vertical-align: super;
+  color: var(--signal);
+  mix-blend-mode: normal;
+}
+
+.hero__topline {
+  position: absolute; top: calc(var(--nav-h) + 8px); left: var(--gutter); right: var(--gutter);
+  z-index: 3; display: flex; justify-content: space-between; gap: 16px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--chalk-dim);
+  pointer-events: none;
+}
+.hero__readout { display: flex; gap: 20px; }
+.hero__readout b { color: var(--chalk); font-weight: 400; }
+
+.hero__foot {
+  position: relative; z-index: 3;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+  margin-top: 24px;
+}
+.hero__blurb { max-width: 34ch; font-size: clamp(15px, 1.8vw, 20px); letter-spacing: -0.01em; line-height: 1.25; color: var(--chalk); }
+.hero__blurb .dim { color: var(--chalk-dim); }
+.hero__cta { display: flex; gap: 10px; pointer-events: auto; }
+
+.hint { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 3; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--chalk-dim); animation: pulse 2.6s var(--ease) infinite; pointer-events: none; }
+@keyframes pulse { 0%,100% { opacity: 0.35; } 50% { opacity: 1; } }
+
+/* ---------- second act: the scale ---------- */
+.act { background: var(--void); color: var(--chalk); padding: clamp(60px, 12vw, 180px) 0; position: relative; }
+.act--paper { background: var(--paper); color: var(--ink); }
+
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 5vw, 80px); align-items: center; }
+.split__big { font-weight: 700; letter-spacing: -0.04em; line-height: 0.9; font-size: clamp(40px, 8vw, 120px); }
+.split__big em { font-style: normal; color: var(--signal); }
+.split__body { font-size: clamp(15px, 1.8vw, 19px); line-height: 1.4; max-width: 42ch; }
+.split__body .label { display: block; margin-bottom: 16px; }
+
+/* index feature strip — three drops */
+.drops { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--void-line); margin-top: clamp(30px, 6vw, 70px); }
+.drop { background: var(--void); padding: 28px 24px; min-height: 340px; display: flex; flex-direction: column; justify-content: space-between; transition: background 0.5s var(--ease); position: relative; overflow: hidden; }
+.drop:hover { background: var(--void-2); }
+.drop__n { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--chalk-dim); }
+.drop__title { font-size: clamp(24px, 3vw, 40px); font-weight: 700; letter-spacing: -0.03em; line-height: 0.95; }
+.drop__meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--chalk-dim); display: flex; justify-content: space-between; }
+.drop .oz { color: var(--signal); }
+
+/* big ticker of unit conversions */
+.units { border-block: 1px solid var(--void-line); padding: 16px 0; overflow: hidden; white-space: nowrap; }
+.units__track { display: inline-block; animation: slide 32s linear infinite; }
+.units span { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--chalk-dim); padding: 0 28px; }
+.units span b { color: var(--chalk); font-weight: 400; }
+
+/* featured product rail on landing */
+.rail-head { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 24px; }
+.rail-head h2 { font-size: clamp(28px, 4vw, 56px); font-weight: 700; letter-spacing: -0.04em; }
+.rail-head a { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+.rail-head a:hover { color: var(--signal); }
+
+.void .card { background: var(--void); }
+.void .card__media { background: var(--void-2); }
+.void .card__name, .void .card__price { color: var(--chalk); }
+.void .card__sub { color: var(--chalk-dim); }
+.void .grid { background: var(--void-line); }
+.void .card__tag { background: var(--chalk); color: var(--void); }
+
+@media (max-width: 860px) {
+  .split { grid-template-columns: 1fr; }
+  .drops { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .hero__topline { display: none; }
+  .hero { padding-bottom: 40px; }
+}
+
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+/* ============================================================
+   OUNCE — catalogue + generative artwork
+   ------------------------------------------------------------
+   Product imagery is generated as abstract, on-brand SVG so the
+   store is 100% self-contained and looks intentional out of the
+   box. To use real photography instead, give a product an
+   `images: ['/assets/img/oz-01-front.jpg', ...]` array — the
+   store will use those and ignore the generated art.
+   ============================================================ */
+
+const CURRENCY = { code: "GBP", symbol: "£" };
+
+const PRODUCTS = [
+  {
+    id: "oz-01", code: "OZ—01", name: "Heavyweight Hoodie", category: "outerwear",
+    price: 180, mass: 620, colorway: "Bone",
+    fabric: "480gsm brushed-back loopback cotton", madeIn: "Portugal",
+    fit: "Boxy, dropped shoulder",
+    palette: ["#E5E2DA", "#141412", "#C9C5BA"],
+    sizes: [["XS", true], ["S", true], ["M", true], ["L", true], ["XL", true], ["XXL", false]],
+    desc: "The anchor of the line. A single-weight hood cut heavy enough to hold its shape and soften over years, not washes. Blank on purpose.",
+    featured: true, drop: 1,
+  },
+  {
+    id: "oz-02", code: "OZ—02", name: "14oz Selvedge Denim", category: "bottoms",
+    price: 240, mass: 890, colorway: "Raw Indigo",
+    fabric: "14oz unsanforized selvedge, Kaihara mill", madeIn: "Japan",
+    fit: "Straight, mid-rise",
+    palette: ["#20303F", "#0B1620", "#3C5266"],
+    sizes: [["28", true], ["30", true], ["32", true], ["34", true], ["36", true], ["38", true]],
+    desc: "Loomed narrow, hemmed clean. Sold rigid — it belongs to whoever wears it in. Expect fades at the ounce it was named for.",
+    featured: true, drop: 1,
+  },
+  {
+    id: "oz-03", code: "OZ—03", name: "Gram Tee", category: "tops",
+    price: 65, mass: 180, colorway: "Chalk",
+    fabric: "220gsm compact organic jersey", madeIn: "Portugal",
+    fit: "Regular, structured collar",
+    palette: ["#EFEDE6", "#141412", "#D8D4C9"],
+    sizes: [["XS", true], ["S", true], ["M", true], ["L", true], ["XL", true], ["XXL", true]],
+    desc: "Every gram accounted for. A dense-knit blank with a collar that survives the machine. Buy three.",
+    featured: false, drop: 2,
+  },
+  {
+    id: "oz-04", code: "OZ—04", name: "Featherweight Shell", category: "outerwear",
+    price: 320, mass: 240, colorway: "Storm",
+    fabric: "3-layer recycled ripstop, 10k/10k", madeIn: "Vietnam",
+    fit: "Relaxed, articulated",
+    palette: ["#5C6066", "#20232A", "#878C93"],
+    sizes: [["S", true], ["M", true], ["L", true], ["XL", false]],
+    desc: "Two-hundred-forty grams of weather between you and the day. Taped seams, no branding, a hood that actually works.",
+    featured: true, drop: 1,
+  },
+  {
+    id: "oz-05", code: "OZ—05", name: "Ballast Cargo", category: "bottoms",
+    price: 210, mass: 540, colorway: "Field Olive",
+    fabric: "Garment-dyed cotton ripstop", madeIn: "Portugal",
+    fit: "Wide, cropped ankle",
+    palette: ["#4A4A38", "#23241B", "#6E6E55"],
+    sizes: [["28", true], ["30", true], ["32", true], ["34", true], ["36", false]],
+    desc: "Weight where you want it. Deep bellows pockets, a hem that breaks once. Dyed after the fact so no two settle the same.",
+    featured: false, drop: 2,
+  },
+  {
+    id: "oz-06", code: "OZ—06", name: "Counterweight Knit", category: "knitwear",
+    price: 195, mass: 480, colorway: "Oat",
+    fabric: "7-gauge lambswool, fully fashioned", madeIn: "Scotland",
+    fit: "Regular, high crew",
+    palette: ["#D6CDB8", "#3A3428", "#B6AA8E"],
+    sizes: [["S", true], ["M", true], ["L", true], ["XL", true]],
+    desc: "Spun to balance the hood. A dense crew with saddle shoulders and a collar that stands on its own.",
+    featured: true, drop: 1,
+  },
+  {
+    id: "oz-07", code: "OZ—07", name: "Troy Beanie", category: "accessories",
+    price: 55, mass: 90, colorway: "Ink",
+    fabric: "Extrafine merino rib", madeIn: "Italy",
+    fit: "Cuffed, mid-depth",
+    palette: ["#16171A", "#050506", "#33353B"],
+    sizes: [["OS", true]],
+    desc: "Measured in troy, like the things worth keeping. A fine-gauge cuff that sits without slouch.",
+    featured: false, drop: 3,
+  },
+  {
+    id: "oz-08", code: "OZ—08", name: "Density Overshirt", category: "outerwear",
+    price: 230, mass: 610, colorway: "Slate",
+    fabric: "Double-face brushed wool-cotton", madeIn: "Portugal",
+    fit: "Boxy, shirt-jacket",
+    palette: ["#575A5E", "#25272A", "#7C7F84"],
+    sizes: [["S", true], ["M", true], ["L", true], ["XL", true], ["XXL", false]],
+    desc: "The in-between layer with real mass. Snaps hidden under a placket, a chest pocket sized for nothing in particular.",
+    featured: true, drop: 2,
+  },
+  {
+    id: "oz-09", code: "OZ—09", name: "Null Socks", category: "accessories",
+    price: 22, mass: 40, colorway: "Bone / Ink",
+    fabric: "Combed cotton terry, 2-pack", madeIn: "Portugal",
+    fit: "Crew, cushioned sole",
+    palette: ["#E5E2DA", "#141412", "#B7B3A8"],
+    sizes: [["OS", true]],
+    desc: "The lightest thing we make. Ribbed cuff, terry footbed, a tone-on-tone stripe you'll only notice up close.",
+    featured: false, drop: 3,
+  },
+  {
+    id: "oz-10", code: "OZ—10", name: "Standard Sweatpant", category: "bottoms",
+    price: 150, mass: 500, colorway: "Bone",
+    fabric: "480gsm loopback cotton", madeIn: "Portugal",
+    fit: "Tapered, elastic hem",
+    palette: ["#E5E2DA", "#141412", "#C9C5BA"],
+    sizes: [["XS", true], ["S", true], ["M", true], ["L", true], ["XL", true], ["XXL", true]],
+    desc: "Cut from the same cloth as the hood. A tapered pant with a drawcord you can actually cinch and a hem that stays put.",
+    featured: false, drop: 2,
+  },
+];
+
+/* -------- deterministic pseudo-random (seeded) -------- */
+function seeded(seedStr) {
+  let h = 1779033703 ^ seedStr.length;
+  for (let i = 0; i < seedStr.length; i++) {
+    h = Math.imul(h ^ seedStr.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return function () {
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  };
+}
+
+/* -------- generative artwork ---------------------------
+   Returns an SVG string. `variant` 0 = primary, 1 = alt.
+   Compositions vary by category but share a language:
+   paper ground, one mass, structural lines, an oz mark.  */
+function ounceArt(p, variant = 0, opts = {}) {
+  const rnd = seeded(p.id + ":" + variant);
+  const w = 800, h = 1000;
+  const [c1, c2, c3] = p.palette;
+  const light = mixHex(c1, "#ffffff", 0.4);
+
+  // NOTE: no <defs>/gradient/filter — internal url(#id) refs don't
+  // resolve when an SVG is loaded as a data: URI inside <img>. We use
+  // solid fills only; page-wide film grain is handled globally in CSS.
+  const ground = mixHex(light, c1, 0.5);
+  const hi = mixHex(light, "#ffffff", 0.5);
+
+  let body = "";
+  const cat = p.category;
+
+  if (cat === "outerwear" || cat === "knitwear") {
+    // a large soft garment mass, offset; a heavy circle = the weight
+    const ox = 150 + rnd() * 80, oy = 200 + rnd() * 60;
+    const bw = 500, bh = 620;
+    body += `<rect x="${ox}" y="${oy}" width="${bw}" height="${bh}" rx="34" fill="${c2}" opacity="0.92"/>`;
+    body += `<rect x="${ox + 46}" y="${oy + 40}" width="${bw - 92}" height="${bh - 80}" rx="20" fill="none" stroke="${light}" stroke-width="1.5" opacity="0.35"/>`;
+    // sleeve/negative marks
+    body += `<rect x="${ox - 70}" y="${oy + 30}" width="90" height="300" rx="30" fill="${c2}" opacity="0.7"/>`;
+    body += `<rect x="${ox + bw - 20}" y="${oy + 30}" width="90" height="300" rx="30" fill="${c2}" opacity="0.7"/>`;
+    const r = 60 + rnd() * 30;
+    body += `<circle cx="${ox + bw - 40}" cy="${oy + bh - 40}" r="${r}" fill="${c3}"/>`;
+  } else if (cat === "bottoms") {
+    const ox = 250 + rnd() * 40, oy = 120;
+    body += `<rect x="${ox}" y="${oy}" width="150" height="720" rx="24" fill="${c2}" opacity="0.92"/>`;
+    body += `<rect x="${ox + 160}" y="${oy}" width="150" height="720" rx="24" fill="${c2}" opacity="0.82"/>`;
+    body += `<line x1="${ox + 155}" y1="${oy}" x2="${ox + 155}" y2="${oy + 720}" stroke="${light}" stroke-width="1.5" opacity="0.4"/>`;
+    body += `<circle cx="${ox + 155}" cy="${oy + 620}" r="72" fill="${c3}"/>`;
+  } else {
+    // accessories / tops: a centered stack + big weight
+    const cx = 400, cy = 500;
+    if (cat === "tops") {
+      body += `<rect x="200" y="240" width="400" height="480" rx="26" fill="${c2}" opacity="0.92"/>`;
+      body += `<rect x="150" y="270" width="80" height="200" rx="26" fill="${c2}" opacity="0.7"/>`;
+      body += `<rect x="570" y="270" width="80" height="200" rx="26" fill="${c2}" opacity="0.7"/>`;
+      body += `<circle cx="400" cy="300" r="60" fill="${ground}"/>`; // collar hole
+    } else {
+      for (let i = 0; i < 3; i++) {
+        const yy = 340 + i * 120, ww = 360 - i * 40;
+        body += `<rect x="${cx - ww / 2}" y="${yy}" width="${ww}" height="86" rx="43" fill="${c2}" opacity="${0.9 - i * 0.15}"/>`;
+      }
+    }
+    body += `<circle cx="${cx + 150}" cy="${cy + 210}" r="80" fill="${c3}"/>`;
+  }
+
+  // structural registration lines
+  body += `<g opacity="0.5" stroke="${c2}" stroke-width="1">
+    <line x1="60" y1="0" x2="60" y2="${h}"/><line x1="${w - 60}" y1="0" x2="${w - 60}" y2="${h}"/>
+    <line x1="0" y1="${h - 60}" x2="${w}" y2="${h - 60}"/></g>`;
+
+  // typographic marks
+  const label = opts.label !== false;
+  let type = "";
+  if (label) {
+    type = `
+    <text x="60" y="66" font-family="ui-monospace, Menlo, monospace" font-size="20" letter-spacing="2" fill="${c2}">${p.code}</text>
+    <text x="${w - 60}" y="66" text-anchor="end" font-family="ui-monospace, Menlo, monospace" font-size="20" fill="${p.category === 'outerwear' ? '#E8451F' : c2}">${p.mass}<tspan font-size="12">G</tspan></text>
+    <text x="60" y="${h - 24}" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="44" letter-spacing="-2" fill="${c2}">ounce<tspan font-family="ui-monospace, monospace" font-size="16" dy="-18" fill="#E8451F"> oz</tspan></text>`;
+  }
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${p.name}">
+    <rect width="${w}" height="${h}" fill="${ground}"/>
+    <rect width="${w}" height="${h * 0.55}" fill="${hi}" opacity="0.6"/>
+    ${body}
+    ${type}
+  </svg>`;
+}
+
+function mixHex(a, b, t) {
+  const pa = hx(a), pb = hx(b);
+  const c = pa.map((v, i) => Math.round(v + (pb[i] - v) * t));
+  return "#" + c.map((v) => v.toString(16).padStart(2, "0")).join("");
+}
+function hx(s) { s = s.replace("#", ""); return [0, 2, 4].map((i) => parseInt(s.slice(i, i + 2), 16)); }
+
+/* svg string -> data URI (for <img src>) */
+function artURI(p, variant = 0, opts) {
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(ounceArt(p, variant, opts));
+}
+
+function money(n) { return CURRENCY.symbol + n.toFixed(0); }
+function getProduct(id) { return PRODUCTS.find((p) => p.id === id); }
+
+
+const VIEWS = {"landing":"<!-- ============ HERO / THE WEIGHING ROOM ============ -->\n  <section class=\"hero\">\n    <canvas id=\"field\" aria-hidden=\"true\"></canvas>\n\n    <div class=\"hero__topline\">\n      <span>OUNCE® · SUPPLY CO.</span>\n      <div class=\"hero__readout\">\n        <span>ROOM MASS <b data-mass-readout>0 g</b></span>\n        <span>EST · MMXXV</span>\n      </div>\n    </div>\n\n    <div class=\"hero__type\">\n      <h1 class=\"hero__mark\">ounce<span class=\"oz\">oz</span></h1>\n    </div>\n\n    <div class=\"hero__foot\">\n      <p class=\"hero__blurb\">A clothing line measured in grams. <span class=\"dim\">Heavyweight essentials, cut clean, sold blank — everything here has weight.</span></p>\n      <div class=\"hero__cta\">\n        <a class=\"btn btn--void\" href=\"#/shop\">Enter the shop</a>\n        <a class=\"btn\" style=\"background:transparent;color:var(--chalk);box-shadow:inset 0 0 0 1px var(--void-line)\" href=\"#/lookbook\">Lookbook</a>\n      </div>\n    </div>\n\n    <div class=\"hint\">Move · drag · drop a weight</div>\n  </section>\n\n  <!-- ============ UNIT TICKER ============ -->\n  <div class=\"units\">\n    <div class=\"units__track\">\n      <span>1 OUNCE = <b>28.349523 G</b></span>\n      <span>16 OZ = <b>1 LB</b></span>\n      <span>1 TROY OZ = <b>31.103 G</b></span>\n      <span>MADE TO <b>OUTLIVE</b></span>\n      <span>NO LOGOS · <b>ONLY MASS</b></span>\n      <span>DENIM · <b>14 OZ</b></span>\n      <span>SHIPPED FROM <b>LISBON</b></span>\n      <span>1 OUNCE = <b>28.349523 G</b></span>\n    </div>\n  </div>\n\n  <!-- ============ STATEMENT ============ -->\n  <section class=\"act act--paper\">\n    <div class=\"wrap split\">\n      <div class=\"split__big\" data-reveal>Weight<br>is the<br><em>proof.</em></div>\n      <div class=\"split__body\" data-reveal>\n        <span class=\"label\">01 — The idea</span>\n        We started with a simple bias: the clothes that last are the ones you can feel.\n        Denser cloth, cleaner cuts, nothing shouting. Each ounce piece lists its mass in grams\n        on the label — a receipt for the substance you're paying for. Buy less. Feel more.\n      </div>\n    </div>\n  </section>\n\n  <!-- ============ THREE DROPS ============ -->\n  <section class=\"act\">\n    <div class=\"wrap\">\n      <div class=\"rail-head\" data-reveal>\n        <h2>The Weights</h2>\n        <a href=\"#/shop\">All pieces →</a>\n      </div>\n      <div class=\"drops\">\n        <a class=\"drop\" href=\"#/shop?c=outerwear\" data-reveal>\n          <div class=\"drop__n\">DROP 01</div>\n          <div class=\"drop__title\">Heavy<br>Layers</div>\n          <div class=\"drop__meta\"><span>Outerwear</span><span class=\"oz\">480—890 g</span></div>\n        </a>\n        <a class=\"drop\" href=\"#/shop?c=knitwear\" data-reveal>\n          <div class=\"drop__n\">DROP 02</div>\n          <div class=\"drop__title\">Spun<br>&amp; Fashioned</div>\n          <div class=\"drop__meta\"><span>Knitwear</span><span class=\"oz\">7-gauge</span></div>\n        </a>\n        <a class=\"drop\" href=\"#/shop?c=accessories\" data-reveal>\n          <div class=\"drop__n\">DROP 03</div>\n          <div class=\"drop__title\">The<br>Lightest</div>\n          <div class=\"drop__meta\"><span>Accessories</span><span class=\"oz\">40—90 g</span></div>\n        </a>\n      </div>\n    </div>\n  </section>\n\n  <!-- ============ FEATURED RAIL ============ -->\n  <section class=\"act\" style=\"padding-top:0\">\n    <div class=\"wrap\">\n      <div class=\"rail-head\" data-reveal>\n        <h2>Selected</h2>\n        <a href=\"#/shop\">Shop all →</a>\n      </div>\n      <div class=\"grid\" data-featured-rail data-reveal></div>\n    </div>\n  </section>\n\n  <!-- ============ CLOSING STATEMENT ============ -->\n  <section class=\"act act--paper\">\n    <div class=\"wrap split\">\n      <div class=\"split__body\" data-reveal>\n        <span class=\"label\">02 — The promise</span>\n        Made in small runs in Portugal, Japan, Scotland and Italy. Sold direct, priced by what it costs\n        to do right, returned free within thirty days. When it finally wears through, we'll help you mend it.\n      </div>\n      <div class=\"split__big\" style=\"text-align:right\" data-reveal>Own<br>less,<br><em>heavier.</em></div>\n    </div>\n  </section>","shop":"<main class=\"page\">\n    <div class=\"wrap\">\n      <header class=\"shop-head\">\n        <h1>Shop<span style=\"color:var(--signal)\">.</span></h1>\n        <div class=\"shop-head__meta\">\n          <p class=\"mono\" style=\"color:var(--ash)\"><span data-shop-count>00</span> pieces · one capsule · restocked by mass</p>\n          <p style=\"margin-top:8px\">Every price is what it costs to make it well. Every piece lists its weight.</p>\n        </div>\n      </header>\n    </div>\n\n    <div class=\"wrap\">\n      <div class=\"filters\" data-filters></div>\n      <div class=\"grid\" data-shop-grid style=\"margin-top:1px\"></div>\n    </div>\n\n    <div class=\"wrap\" style=\"margin-top:1px\">\n      <div class=\"marquee\">\n        <div class=\"marquee__track\">\n          <span>FREE SHIPPING OVER <span class=\"oz\">£200</span></span>\n          <span>30-DAY RETURNS</span>\n          <span>MADE IN SMALL RUNS</span>\n          <span>MEASURED IN <span class=\"oz\">GRAMS</span></span>\n          <span>SHIPPED FROM LISBON</span>\n        </div>\n      </div>\n    </div>\n  </main>","product":"<main class=\"page\">\n    <div class=\"pdp\" data-pdp></div>\n\n    <section class=\"wrap related\">\n      <h3>You might also carry</h3>\n      <div class=\"grid\" data-related></div>\n    </section>\n  </main>","lookbook":"<main class=\"page\">\n    <section class=\"wrap editorial\">\n      <div class=\"mono\" style=\"display:flex;justify-content:space-between;color:var(--ash)\">\n        <span>Volume 01</span><span>Study of Mass</span><span>MMXXV</span>\n      </div>\n      <p class=\"lede\" style=\"margin-top:32px\" data-reveal>Cloth, <span class=\"dim\">held still</span><br>long enough to<br>feel its weight.</p>\n    </section>\n\n    <!-- generative editorial grid -->\n    <div class=\"wrap\">\n      <div class=\"look-grid\">\n        <div class=\"look s7 t169\" data-art=\"oz-01:0\" data-cap=\"OZ—01 · Heavyweight\"></div>\n        <div class=\"look s5 t45\" data-art=\"oz-04:2\" data-cap=\"OZ—04 · Shell\"></div>\n        <div class=\"look s4 t34\" data-art=\"oz-02:1\" data-cap=\"OZ—02 · 14oz\"></div>\n        <div class=\"look s4 t34\" data-art=\"oz-06:0\" data-cap=\"OZ—06 · Knit\"></div>\n        <div class=\"look s4 t34\" data-art=\"oz-08:1\" data-cap=\"OZ—08 · Overshirt\"></div>\n      </div>\n    </div>\n\n    <section class=\"wrap editorial\" style=\"text-align:center\">\n      <p class=\"lede\" style=\"margin-inline:auto\" data-reveal>Everything blank.<br><span class=\"dim\">Nothing empty.</span></p>\n    </section>\n\n    <div class=\"wrap\">\n      <div class=\"look-grid\">\n        <div class=\"look s6 t45\" data-art=\"oz-05:0\" data-cap=\"OZ—05 · Ballast\"></div>\n        <div class=\"look s6 t45\" data-art=\"oz-03:1\" data-cap=\"OZ—03 · Gram Tee\"></div>\n        <div class=\"look s12 t169 look--wide\" data-art=\"oz-01:1\" data-cap=\"Bone on bone\"></div>\n        <div class=\"look s5 t34\" data-art=\"oz-07:0\" data-cap=\"OZ—07 · Troy\"></div>\n        <div class=\"look s7 t45\" data-art=\"oz-10:2\" data-cap=\"OZ—10 · Standard\"></div>\n      </div>\n    </div>\n\n    <section class=\"wrap editorial\" style=\"display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap\">\n      <p class=\"lede\" data-reveal>Shot in <span class=\"dim\">available light,<br>Lisbon.</span></p>\n      <a class=\"btn\" href=\"#/shop\">Shop the volume →</a>\n    </section>\n  </main>","about":"<main class=\"page\">\n    <section class=\"wrap editorial\">\n      <p class=\"lede\" data-reveal>We make clothes<br>you can <span class=\"dim\">feel the<br>weight of.</span></p>\n    </section>\n\n    <div class=\"units\" style=\"border-color:var(--line)\">\n      <div class=\"units__track\">\n        <span style=\"color:var(--ash)\">EST. LISBON <b style=\"color:var(--ink)\">MMXXV</b></span>\n        <span style=\"color:var(--ash)\">DIRECT TO YOU</span>\n        <span style=\"color:var(--ash)\">SMALL RUNS</span>\n        <span style=\"color:var(--ash)\">NO SEASONS · <b style=\"color:var(--ink)\">ONLY WEIGHT</b></span>\n        <span style=\"color:var(--ash)\">MENDED, NOT REPLACED</span>\n      </div>\n    </div>\n\n    <section class=\"wrap about-grid\">\n      <div class=\"prose\" data-reveal>\n        <p>Ounce began with a scale and a suspicion. We kept noticing that the garments we reached for — the ones that outlived every trend — all had one thing in common. They were heavy. Denser cloth, more of it, held together better. So we made weight the whole point.</p>\n        <p>Every piece we release is weighed and its mass printed on the label, in grams. It's a receipt for substance: proof that when you pay for an ounce hoodie, you're paying for cloth, not marketing. We don't do logos, seasons, or noise. We do a small number of blank, considered things and make them as well as we can afford to.</p>\n        <p>They're cut in short runs by makers we can call by name — mills in Japan, knitters in Scotland, a small factory outside Lisbon. Sold straight to you so the money goes into the cloth. And when yours finally wears through, write to us; we'd rather help you mend it than sell you another.</p>\n      </div>\n      <div data-reveal>\n        <img src=\"\" data-about-art alt=\"ounce study\" style=\"width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--paper-2)\">\n        <p class=\"mono\" style=\"color:var(--ash);margin-top:12px\">FIG. 01 — MASS AS METHOD</p>\n      </div>\n    </section>\n\n    <section class=\"wrap\" style=\"padding-bottom:clamp(40px,8vw,90px)\">\n      <div class=\"mono\" style=\"color:var(--ash);padding-bottom:20px\">The rules we weigh against</div>\n      <div class=\"manifesto\" data-reveal>\n        <div><span class=\"n\">01</span><div><h4>Weight is honesty.</h4><p>If it matters, it should have mass. We print the grams so you can hold us to it.</p></div></div>\n        <div><span class=\"n\">02</span><div><h4>Blank on purpose.</h4><p>No logos, no slogans. The garment is the statement; you are the rest of it.</p></div></div>\n        <div><span class=\"n\">03</span><div><h4>Fewer, better, kept.</h4><p>We'd rather sell you one thing for a decade than ten things for a year.</p></div></div>\n        <div><span class=\"n\">04</span><div><h4>Made by names.</h4><p>Short runs, real makers, fair terms. Direct to you so the value stays in the cloth.</p></div></div>\n        <div><span class=\"n\">05</span><div><h4>Mended, not replaced.</h4><p>Repairs before replacements. The heaviest thing a garment can carry is time.</p></div></div>\n      </div>\n    </section>\n\n    <section class=\"wrap editorial\" style=\"text-align:center\">\n      <p class=\"lede\" style=\"margin-inline:auto\" data-reveal>Buy less.<br><span style=\"color:var(--signal)\">Heavier.</span></p>\n      <a class=\"btn\" style=\"margin-top:28px\" href=\"#/shop\">Enter the shop →</a>\n    </section>\n  </main>"};
+/* ============================================================
+   OUNCE — single-page app glue (built from the repo source)
+   Provides: cart, persistent chrome, hash router, view inits,
+   and the landing physics field. Checkout runs in demo mode
+   (no serverless function on a static host).
+   ============================================================ */
+
+/* ---------------- CART ---------------- */
+const CART_KEY = "ounce.cart.v1";
+const Cart = {
+  items: [],
+  load() { try { this.items = JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch { this.items = []; } },
+  save() { localStorage.setItem(CART_KEY, JSON.stringify(this.items)); this.render(); },
+  key(id, size) { return id + "::" + size; },
+  add(id, size, qty = 1) {
+    const p = getProduct(id); if (!p) return;
+    const k = this.key(id, size);
+    const f = this.items.find((i) => i.k === k);
+    if (f) f.qty += qty; else this.items.push({ k, id, size, qty });
+    this.save(); toast("Added · " + p.name + " · " + size); this.open();
+  },
+  setQty(k, qty) { const it = this.items.find((i) => i.k === k); if (!it) return; it.qty = Math.max(0, qty); if (it.qty === 0) this.items = this.items.filter((i) => i.k !== k); this.save(); },
+  remove(k) { this.items = this.items.filter((i) => i.k !== k); this.save(); },
+  count() { return this.items.reduce((n, i) => n + i.qty, 0); },
+  subtotal() { return this.items.reduce((s, i) => { const p = getProduct(i.id); return s + (p ? p.price * i.qty : 0); }, 0); },
+  mass() { return this.items.reduce((m, i) => { const p = getProduct(i.id); return m + (p ? p.mass * i.qty : 0); }, 0); },
+  open() { document.querySelector(".cart-veil")?.setAttribute("data-open", "true"); document.querySelector(".cart-panel")?.setAttribute("data-open", "true"); document.body.style.overflow = "hidden"; },
+  close() { document.querySelector(".cart-veil")?.removeAttribute("data-open"); document.querySelector(".cart-panel")?.removeAttribute("data-open"); document.body.style.overflow = ""; },
+  render() {
+    const c = this.count();
+    document.querySelectorAll(".cart-btn__count").forEach((el) => { el.textContent = c; el.setAttribute("data-empty", c === 0); el.style.setProperty("--pop", "1.4"); setTimeout(() => el.style.setProperty("--pop", "1"), 200); });
+    const body = document.querySelector(".cart-items"); const foot = document.querySelector(".cart-foot");
+    if (!body) return;
+    if (this.items.length === 0) { body.innerHTML = '<div class="cart-empty"><span class="label">Nothing weighed yet</span><a class="btn btn--ghost" href="#/shop">Enter the shop</a></div>'; if (foot) foot.hidden = true; return; }
+    if (foot) foot.hidden = false;
+    body.innerHTML = this.items.map((i) => {
+      const p = getProduct(i.id); const img = p.images?.[0] || artURI(p, 0, { label: false });
+      return '<div class="cart-line"><div class="cart-line__media"><img src="' + img + '" alt="' + p.name + '"></div><div><div class="cart-line__name">' + p.name + '</div><div class="cart-line__meta">' + p.code + ' · Size ' + i.size + ' · ' + p.mass + 'g</div><div class="cart-line__qty"><button aria-label="Decrease" data-dec="' + i.k + '">–</button><span>' + i.qty + '</span><button aria-label="Increase" data-inc="' + i.k + '">+</button></div></div><div><div class="cart-line__price">' + money(p.price * i.qty) + '</div><button class="cart-line__rm" data-rm="' + i.k + '">Remove</button></div></div>';
+    }).join("");
+    document.querySelectorAll("[data-cart-subtotal]").forEach((el) => { el.textContent = money(this.subtotal()); });
+    const mass = document.querySelector("[data-cart-mass]"); if (mass) mass.textContent = (this.mass() / 1000).toFixed(2) + " kg";
+  },
+};
+
+function demoCheckout() {
+  const total = money(Cart.subtotal()); const kg = (Cart.mass() / 1000).toFixed(2);
+  Cart.close();
+  const el = document.createElement("div"); el.className = "cart-veil"; el.setAttribute("data-open", "true"); el.style.zIndex = 1300;
+  el.innerHTML = '<div style="position:fixed;inset:0;display:grid;place-items:center;padding:24px"><div style="background:var(--paper);max-width:440px;width:100%;padding:40px;text-align:center"><div class="label" style="color:var(--signal)">Order received — demo</div><h3 style="font-size:34px;font-weight:700;letter-spacing:-.03em;margin:16px 0 10px">Thank you.</h3><p style="color:var(--ash);font-size:14px;margin-bottom:8px">' + Cart.count() + ' pieces · ' + kg + ' kg · ' + total + '</p><p class="mono" style="color:var(--ash);margin-bottom:24px">This is a live demo — connect Stripe on deploy to take real payments.</p><button class="btn btn--block" data-demo-close>Close</button></div></div>';
+  document.body.appendChild(el);
+  el.querySelector("[data-demo-close]").onclick = () => { el.remove(); document.body.style.overflow = ""; Cart.items = []; Cart.save(); };
+  el.onclick = (e) => { if (e.target === el) { el.remove(); document.body.style.overflow = ""; } };
+}
+
+let toastTimer;
+function toast(msg) {
+  let t = document.querySelector(".toast"); if (!t) { t = document.createElement("div"); t.className = "toast"; document.body.appendChild(t); }
+  t.textContent = msg; requestAnimationFrame(() => t.setAttribute("data-show", "true"));
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.removeAttribute("data-show"), 2200);
+}
+
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-inc],[data-dec],[data-rm],[data-cart-open],[data-cart-close],[data-checkout]"); if (!t) return;
+  if (t.dataset.inc != null) { const it = Cart.items.find((i) => i.k === t.dataset.inc); Cart.setQty(t.dataset.inc, it.qty + 1); }
+  else if (t.dataset.dec != null) { const it = Cart.items.find((i) => i.k === t.dataset.dec); Cart.setQty(t.dataset.dec, it.qty - 1); }
+  else if (t.dataset.rm != null) Cart.remove(t.dataset.rm);
+  else if (t.dataset.cartOpen != null) Cart.open();
+  else if (t.dataset.cartClose != null) Cart.close();
+  else if (t.dataset.checkout != null) demoCheckout();
+});
+document.addEventListener("click", (e) => { if (e.target.classList?.contains("cart-veil") && e.target.dataset.open) Cart.close(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") Cart.close(); });
+Cart.load();
+
+/* ---------------- shared card ---------------- */
+function cardHTML(p, opts) {
+  opts = opts || {};
+  const primary = p.images?.[0] || artURI(p, 0);
+  const alt = p.images?.[1] || artURI(p, 1);
+  const sold = p.sizes.every((s) => !s[1]);
+  return '<a class="card" href="#/product/' + p.id + '"><div class="card__media"><img src="' + primary + '" alt="' + p.name + '" loading="lazy"><img class="alt" src="' + alt + '" alt="" aria-hidden="true" loading="lazy">' +
+    (p.drop === 1 ? '<span class="card__tag">New</span>' : '') +
+    (sold ? '<span class="card__tag card__tag--sold">Sold Out</span>' : '') +
+    (opts.quick ? '<div class="card__quick"><span class="btn btn--ghost btn--block" style="background:var(--paper)">View · ' + money(p.price) + '</span></div>' : '') +
+    '</div><div class="card__info"><div><div class="card__name">' + p.name + '</div><div class="card__sub">' + (opts.sub ? opts.sub(p) : (p.code + ' · ' + p.mass + 'g')) + '</div></div><div class="card__price">' + money(p.price) + '</div></div></a>';
+}
+
+/* ---------------- persistent chrome ---------------- */
+const NAVLINKS = [["Shop", "#/shop", "shop"], ["Lookbook", "#/lookbook", "lookbook"], ["About", "#/about", "about"]];
+const INFO = {
+  ship: ["Shipping & Returns", "Complimentary worldwide shipping over £200; a flat £12 below. Dispatched within 48 hours from our Lisbon studio, tracked door-to-door. Unworn pieces returned within 30 days for a full refund — we cover the first return label."],
+  size: ["Size Guide", "We cut boxy and true. If you sit between sizes and want it clean, take your usual; for the intended drape, size up once. Every product page lists garment mass and flat measurements. Still unsure? Mail the studio — a human answers."],
+  care: ["Care", "Cold wash, inside out, like colours. Hang to dry — heat is where weight goes to die. Denim: wait as long as you can, then wash rarely. Knitwear: fold, never hang. Everything here is built to be worn hard and kept long."],
+};
+
+function mountChrome() {
+  const nav = document.createElement("header"); nav.className = "nav";
+  nav.innerHTML = '<a class="nav__brand" href="#/" aria-label="ounce — home">ounce<sup>oz</sup></a><nav class="nav__links">' +
+    NAVLINKS.map(([t, h, k]) => '<a href="' + h + '" data-nav="' + k + '">' + t + '</a>').join("") +
+    '</nav><div class="nav__right"><button class="cart-btn" data-cart-open aria-label="Open cart">Cart<span class="cart-btn__count" data-empty="true">0</span></button><button class="nav__burger" aria-label="Menu" data-burger><span></span><span></span><span></span></button></div>';
+  document.body.prepend(nav);
+
+  const drawer = document.createElement("div"); drawer.className = "drawer";
+  drawer.innerHTML = '<nav><a href="#/"><span>00</span> Index</a>' + NAVLINKS.map(([t, h], i) => '<a href="' + h + '"><span>0' + (i + 1) + '</span> ' + t + '</a>').join("") + '</nav><div class="drawer__meta"><span class="mono">EST · MMXXV</span><span class="mono">1 oz = 28.35 g</span></div>';
+  document.body.appendChild(drawer);
+
+  const cart = document.createElement("div");
+  cart.innerHTML = '<div class="cart-veil"></div><aside class="cart-panel" aria-label="Cart"><div class="cart-panel__head"><h3>Cart <span data-cart-mass class="mono" style="color:var(--ash)"></span></h3><button class="cart-close" data-cart-close>Close ✕</button></div><div class="cart-items"></div><div class="cart-foot" hidden><div class="cart-foot__row"><span>Subtotal</span><span data-cart-subtotal>—</span></div><div class="cart-foot__row"><span>Shipping</span><span>Calculated at checkout</span></div><div class="cart-foot__row cart-foot__row--total"><span>Total</span><span data-cart-subtotal>—</span></div><button class="btn btn--block" data-checkout>Checkout</button><div class="cart-foot__note">Free shipping over £200 · 30-day returns</div></div></aside>';
+  document.body.appendChild(cart);
+
+  const footer = document.createElement("footer"); footer.className = "footer";
+  footer.innerHTML = '<div class="wrap"><h2 class="footer__word">ounce<span class="oz">®</span></h2><div class="footer__grid"><div><h4>Newsletter</h4><form class="footer__news" data-news><input type="email" placeholder="your@email — weigh in" aria-label="Email" required><button type="submit">Join →</button></form><p class="mono" style="color:var(--chalk-dim);margin-top:14px">No noise. Drops, restocks, and the occasional gram of sense.</p></div><div><h4>Index</h4><ul><li><a href="#/shop">Shop</a></li><li><a href="#/lookbook">Lookbook</a></li><li><a href="#/about">About</a></li></ul></div><div><h4>Info</h4><ul><li><a href="#" data-info="ship">Shipping & Returns</a></li><li><a href="#" data-info="size">Size Guide</a></li><li><a href="#" data-info="care">Care</a></li><li><a href="mailto:studio@ounce.supply">studio@ounce.supply</a></li></ul></div></div><div class="footer__base"><span class="mono">© MMXXV OUNCE SUPPLY CO.</span><span class="mono">DESIGNED BY WEIGHT</span><span class="mono">1 OZ · 28.349523 G</span></div></div>';
+  document.body.appendChild(footer);
+
+  const burger = nav.querySelector("[data-burger]");
+  burger.addEventListener("click", () => { const open = drawer.getAttribute("data-open") === "true"; drawer.setAttribute("data-open", String(!open)); document.body.style.overflow = open ? "" : "hidden"; });
+  drawer.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => { drawer.removeAttribute("data-open"); document.body.style.overflow = ""; }));
+
+  document.addEventListener("submit", (e) => { const f = e.target.closest("[data-news]"); if (!f) return; e.preventDefault(); f.reset(); toast("On the list — welcome to ounce"); });
+  document.addEventListener("click", (e) => { const a = e.target.closest("[data-info]"); if (!a) return; e.preventDefault(); openInfo(a.dataset.info); });
+}
+
+function openInfo(k) {
+  const info = INFO[k]; if (!info) return; const [title, body] = info;
+  const el = document.createElement("div"); el.className = "cart-veil"; el.setAttribute("data-open", "true"); el.style.zIndex = 1300;
+  el.innerHTML = '<div style="position:fixed;inset:0;display:grid;place-items:center;padding:24px" data-x><div style="background:var(--paper);max-width:480px;width:100%;padding:40px"><div class="label" style="color:var(--signal);margin-bottom:14px">Info</div><h3 style="font-size:28px;font-weight:700;letter-spacing:-.03em;margin-bottom:14px">' + title + '</h3><p style="color:#2b2b27;font-size:15px;line-height:1.55;margin-bottom:24px">' + body + '</p><button class="btn btn--block" data-x-close>Close</button></div></div>';
+  document.body.appendChild(el); document.body.style.overflow = "hidden";
+  const close = () => { el.remove(); document.body.style.overflow = ""; };
+  el.querySelector("[data-x-close]").onclick = close; el.querySelector("[data-x]").onclick = (e) => { if (e.target.dataset.x != null) close(); };
+}
+
+/* ---------------- reveal + marquee ---------------- */
+const revealIO = new IntersectionObserver((entries) => { entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); revealIO.unobserve(en.target); } }); }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+function initReveal() { document.querySelectorAll("[data-reveal]:not(.in)").forEach((el) => revealIO.observe(el)); }
+function initMarquees() { document.querySelectorAll(".marquee__track:not([data-dup]), .units__track:not([data-dup])").forEach((t) => { t.setAttribute("data-dup", "1"); t.innerHTML += t.innerHTML; }); }
+
+/* ---------------- landing physics ---------------- */
+let fieldRaf = null;
+function initField() {
+  const canvas = document.getElementById("field"); if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W, H, DPR; const LABELS = ["1oz", "28g", "¼", "½", "16", "oz", "1lb", "g", "454g", "⅛", "2oz", "gram", "τ", "kg"];
+  const mouse = { x: -9999, y: -9999, active: false }; let bodies = [];
+  function resize() { DPR = Math.min(devicePixelRatio || 1, 2); W = canvas.clientWidth; H = canvas.clientHeight; canvas.width = W * DPR; canvas.height = H * DPR; ctx.setTransform(DPR, 0, 0, DPR, 0, 0); }
+  function seed() {
+    const n = Math.round(Math.min(26, Math.max(12, (W * H) / 46000))); bodies = [];
+    for (let i = 0; i < n; i++) { const r = 14 + Math.pow(Math.random(), 1.6) * 62; bodies.push({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25, r, m: r * r, label: LABELS[i % LABELS.length], signal: i === 3, a: Math.random() * Math.PI }); }
+  }
+  function stepFn() {
+    for (const b of bodies) {
+      b.vy += 0.006; b.a += 0.01; b.vx += Math.cos(b.a) * 0.004;
+      if (mouse.active) { const dx = b.x - mouse.x, dy = b.y - mouse.y; const d2 = dx * dx + dy * dy; const R = 190; if (d2 < R * R) { const d = Math.sqrt(d2) || 1; const f = (1 - d / R) * 4 / Math.sqrt(b.m); b.vx += (dx / d) * f * 26; b.vy += (dy / d) * f * 26; } }
+      b.vx *= 0.985; b.vy *= 0.985; b.x += b.vx; b.y += b.vy;
+      if (b.x < b.r) { b.x = b.r; b.vx *= -0.6; } if (b.x > W - b.r) { b.x = W - b.r; b.vx *= -0.6; }
+      if (b.y < b.r) { b.y = b.r; b.vy *= -0.6; } if (b.y > H - b.r) { b.y = H - b.r; b.vy *= -0.5; }
+    }
+    for (let i = 0; i < bodies.length; i++) for (let j = i + 1; j < bodies.length; j++) {
+      const a = bodies[i], c = bodies[j]; const dx = c.x - a.x, dy = c.y - a.y; const dist = Math.hypot(dx, dy) || 1; const min = a.r + c.r + 4;
+      if (dist < min) { const nx = dx / dist, ny = dy / dist; const overlap = (min - dist) / 2; const tot = a.m + c.m; a.x -= nx * overlap * (c.m / tot); a.y -= ny * overlap * (c.m / tot); c.x += nx * overlap * (a.m / tot); c.y += ny * overlap * (a.m / tot); const rel = (c.vx - a.vx) * nx + (c.vy - a.vy) * ny; if (rel < 0) { const imp = -rel * 0.6; a.vx -= nx * imp * (c.m / tot); a.vy -= ny * imp * (c.m / tot); c.vx += nx * imp * (a.m / tot); c.vy += ny * imp * (a.m / tot); } }
+    }
+  }
+  function drawFn() {
+    ctx.clearRect(0, 0, W, H);
+    for (const b of bodies) {
+      ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      if (b.signal) { ctx.fillStyle = "#E8451F"; ctx.fill(); } else { ctx.strokeStyle = "rgba(237,235,228,0.5)"; ctx.lineWidth = 1; ctx.stroke(); }
+      const fs = Math.max(9, Math.min(b.r * 0.42, 22)); ctx.fillStyle = b.signal ? "#0B0B0A" : "rgba(237,235,228,0.7)"; ctx.font = fs + "px ui-monospace, Menlo, monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(b.label, b.x, b.y);
+    }
+  }
+  function loop() { stepFn(); drawFn(); fieldRaf = requestAnimationFrame(loop); }
+  const onResize = () => { resize(); seed(); if (reduce) drawFn(); };
+  const onMove = (e) => { const r = canvas.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.active = true; };
+  const onLeave = () => { mouse.active = false; mouse.x = -9999; };
+  const onDown = (e) => { if (reduce) return; const r = canvas.getBoundingClientRect(); const rr = 16 + Math.random() * 50; bodies.push({ x: e.clientX - r.left, y: e.clientY - r.top, vx: 0, vy: -2, r: rr, m: rr * rr, label: LABELS[(Math.random() * LABELS.length) | 0], a: Math.random() * 6, signal: Math.random() < 0.1 }); if (bodies.length > 44) bodies.shift(); };
+  addEventListener("resize", onResize); canvas.addEventListener("pointermove", onMove); canvas.addEventListener("pointerleave", onLeave); canvas.addEventListener("pointerdown", onDown);
+  const readout = document.querySelector("[data-mass-readout]"); let readTimer;
+  if (readout) readTimer = setInterval(() => { readout.textContent = (bodies.reduce((s, b) => s + b.r, 0) * 1.7).toFixed(0) + " g"; }, 120);
+  resize(); seed(); if (reduce) drawFn(); else { cancelAnimationFrame(fieldRaf); loop(); }
+  window.__fieldCleanup = () => { cancelAnimationFrame(fieldRaf); fieldRaf = null; clearInterval(readTimer); removeEventListener("resize", onResize); };
+}
+
+/* ---------------- view inits ---------------- */
+function initLanding() {
+  initField();
+  const rail = document.querySelector("[data-featured-rail]");
+  if (rail) rail.innerHTML = PRODUCTS.filter((p) => p.featured).slice(0, 4).map((p) => cardHTML(p)).join("");
+}
+
+function initShop(query) {
+  const grid = document.querySelector("[data-shop-grid]"); if (!grid) return;
+  const count = document.querySelector("[data-shop-count]");
+  const cats = ["all", ...new Set(PRODUCTS.map((p) => p.category))];
+  const filters = document.querySelector("[data-filters]");
+  let active = new URLSearchParams(query || "").get("c") || "all";
+  const SORTS = ["featured", "price ↑", "price ↓", "mass ↑", "mass ↓"]; let si = 0; let sort = SORTS[0];
+  filters.innerHTML = cats.map((c) => '<button class="chip" data-cat="' + c + '" data-active="' + (c === active) + '">' + c + '</button>').join("") + '<span class="filters__spacer"></span><button class="chip" data-sort aria-label="Sort">Sort · Featured ⇅</button>';
+  function render() {
+    let list = PRODUCTS.filter((p) => active === "all" || p.category === active);
+    if (sort === "price ↑") list.sort((a, b) => a.price - b.price); else if (sort === "price ↓") list.sort((a, b) => b.price - a.price);
+    else if (sort === "mass ↑") list.sort((a, b) => a.mass - b.mass); else if (sort === "mass ↓") list.sort((a, b) => b.mass - a.mass);
+    else list.sort((a, b) => (b.featured - a.featured) || a.code.localeCompare(b.code));
+    grid.innerHTML = list.map((p) => cardHTML(p, { quick: true, sub: (x) => x.code + " · " + x.category })).join("");
+    if (count) count.textContent = String(list.length).padStart(2, "0");
+  }
+  filters.addEventListener("click", (e) => {
+    const cat = e.target.closest("[data-cat]"); const so = e.target.closest("[data-sort]");
+    if (cat) { active = cat.dataset.cat; filters.querySelectorAll("[data-cat]").forEach((c) => c.setAttribute("data-active", c.dataset.cat === active)); render(); }
+    if (so) { si = (si + 1) % SORTS.length; sort = SORTS[si]; so.textContent = "Sort · " + sort[0].toUpperCase() + sort.slice(1) + " ⇅"; render(); }
+  });
+  render();
+}
+
+function initProduct(id) {
+  const root = document.querySelector("[data-pdp]"); if (!root) return;
+  const p = getProduct(id) || PRODUCTS[0];
+  const shots = p.images ? p.images.map((src) => '<div class="pdp__shot"><img src="' + src + '" alt="' + p.name + '"></div>').join("") : [0, 1, 2].map((v) => '<div class="pdp__shot"><img src="' + artURI(p, v) + '" alt="' + p.name + ' view ' + (v + 1) + '"></div>').join("");
+  const soldOut = p.sizes.every((s) => !s[1]);
+  root.innerHTML = '<div class="pdp__gallery">' + shots + '</div><div class="pdp__panel"><div class="pdp__eyebrow"><span class="label">' + p.code + ' · ' + p.category + '</span><span class="label" style="color:var(--signal)">' + p.mass + ' g</span></div><h1 class="pdp__title">' + p.name + '</h1><div class="pdp__price">' + money(p.price) + ' · ' + p.colorway + '</div><p class="pdp__desc">' + p.desc + '</p><div class="label">Size</div><div class="sizes">' + p.sizes.map((s) => '<button class="size" data-size="' + s[0] + '" data-oos="' + (!s[1]) + '">' + s[0] + '</button>').join("") + '</div><div class="size-note" data-note></div><div class="pdp__buy"><button class="btn btn--block" data-add ' + (soldOut ? "disabled" : "") + '>' + (soldOut ? "Sold Out" : "Add to Cart") + '</button></div><dl class="pdp__spec" style="margin-top:28px"><div><dt>Fabric</dt><dd>' + p.fabric + '</dd></div><div><dt>Fit</dt><dd>' + p.fit + '</dd></div><div><dt>Mass</dt><dd>' + p.mass + ' g · ' + (p.mass / 28.3495).toFixed(1) + ' oz</dd></div><div><dt>Made in</dt><dd>' + p.madeIn + '</dd></div><div><dt>Colourway</dt><dd>' + p.colorway + '</dd></div></dl></div>';
+  let chosen = null; const note = root.querySelector("[data-note]");
+  root.querySelectorAll("[data-size]").forEach((btn) => { if (btn.dataset.oos === "true") return; btn.addEventListener("click", () => { root.querySelectorAll("[data-size]").forEach((b) => b.removeAttribute("data-active")); btn.setAttribute("data-active", "true"); chosen = btn.dataset.size; note.textContent = ""; }); });
+  const avail = p.sizes.filter((s) => s[1]); if (avail.length === 1) { root.querySelector('[data-size="' + avail[0][0] + '"]')?.click(); }
+  root.querySelector("[data-add]")?.addEventListener("click", () => { if (soldOut) return; if (!chosen) { note.textContent = "Select a size first"; return; } Cart.add(p.id, chosen, 1); });
+  const related = document.querySelector("[data-related]");
+  if (related) { const rel = PRODUCTS.filter((x) => x.id !== p.id && x.category === p.category); const pool = (rel.length ? rel : PRODUCTS.filter((x) => x.id !== p.id)).slice(0, 4); related.innerHTML = pool.map((x) => cardHTML(x, { sub: (y) => y.code })).join(""); }
+}
+
+function initLookbook() {
+  document.querySelectorAll("[data-art]").forEach((el) => {
+    const [id, v] = el.dataset.art.split(":"); const p = getProduct(id); if (!p) return;
+    const img = document.createElement("img"); img.src = artURI(p, Number(v) || 0); img.alt = p.name; img.loading = "lazy"; el.appendChild(img);
+    if (el.dataset.cap) { const c = document.createElement("span"); c.className = "look__cap"; c.textContent = el.dataset.cap; el.appendChild(c); }
+  });
+}
+
+function initAbout() { const el = document.querySelector("[data-about-art]"); if (el) el.src = artURI(getProduct("oz-01"), 1); }
+
+/* ---------------- router ---------------- */
+const app = document.getElementById("app");
+function route() {
+  if (window.__fieldCleanup) { window.__fieldCleanup(); window.__fieldCleanup = null; }
+  const raw = (location.hash.slice(1) || "/"); const [path, query] = raw.split("?");
+  const parts = path.split("/").filter(Boolean);
+  const page = parts[0] || "landing";
+  let key = "landing";
+  document.body.classList.remove("void");
+  if (!parts.length) { app.innerHTML = VIEWS.landing; document.body.classList.add("void"); initLanding(); key = "landing"; }
+  else if (page === "shop") { app.innerHTML = VIEWS.shop; initShop(query); key = "shop"; }
+  else if (page === "product") { app.innerHTML = VIEWS.product; initProduct(parts[1]); key = "shop"; }
+  else if (page === "lookbook") { app.innerHTML = VIEWS.lookbook; initLookbook(); key = "lookbook"; }
+  else if (page === "about") { app.innerHTML = VIEWS.about; initAbout(); key = "about"; }
+  else { app.innerHTML = VIEWS.landing; document.body.classList.add("void"); initLanding(); key = "landing"; }
+
+  document.querySelectorAll("[data-nav]").forEach((a) => { if (a.dataset.nav === key) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+  document.title = page === "landing" || !parts.length ? "ounce — everything has weight" : (page[0].toUpperCase() + page.slice(1) + " — ounce");
+  window.scrollTo(0, 0);
+  Cart.render(); initReveal(); initMarquees();
+}
+
+mountChrome();
+addEventListener("hashchange", route);
+route();
+
+</script>
+</body>
+</html>
