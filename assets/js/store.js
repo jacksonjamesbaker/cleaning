@@ -18,17 +18,18 @@ const Cart = {
     window.dispatchEvent(new CustomEvent("cart:change"));
   },
 
-  key(id, size) { return id + "::" + size; },
+  key(id, size, color) { return id + "::" + size + "::" + color; },
 
-  add(id, size, qty = 1) {
+  add(id, size, color, qty = 1) {
     const p = OUNCE.getProduct(id);
     if (!p) return;
-    const k = this.key(id, size);
+    color = color || p.colors[0];
+    const k = this.key(id, size, color);
     const found = this.items.find((i) => i.k === k);
     if (found) found.qty += qty;
-    else this.items.push({ k, id, size, qty });
+    else this.items.push({ k, id, size, color, qty });
     this.save();
-    toast(`Added · ${p.name} · ${size}`);
+    toast(`Added · ${p.name} · ${color} · ${size}`);
     this.open();
   },
 
@@ -79,12 +80,12 @@ const Cart = {
     if (foot) foot.hidden = false;
     body.innerHTML = this.items.map((i) => {
       const p = OUNCE.getProduct(i.id);
-      const img = p.images?.[0] || OUNCE.artURI(p, 0, { label: false });
+      const img = p.images?.[i.color]?.[0] || OUNCE.artURI(p, 0, { color: i.color });
       return `<div class="cart-line">
         <div class="cart-line__media"><img src="${img}" alt="${p.name}"></div>
         <div>
           <div class="cart-line__name">${p.name}</div>
-          <div class="cart-line__meta">${p.code} · Size ${i.size} · ${p.mass}g</div>
+          <div class="cart-line__meta">${i.color} · Size ${i.size} · ${p.mass}g</div>
           <div class="cart-line__qty">
             <button aria-label="Decrease" data-dec="${i.k}">–</button>
             <span>${i.qty}</span>
@@ -120,7 +121,7 @@ async function checkout() {
   const btn = document.querySelector("[data-checkout]");
   const line = Cart.items.map((i) => {
     const p = OUNCE.getProduct(i.id);
-    return { id: i.id, name: p.name, size: i.size, qty: i.qty, price: p.price };
+    return { id: i.id, name: p.name, size: i.size, color: i.color, qty: i.qty, price: p.price };
   });
 
   if (CHECKOUT.mode === "demo") return demoCheckout();

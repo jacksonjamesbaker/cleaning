@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200" role="img" aria-label="ounce">
+  <circle cx="100" cy="100" r="80" fill="none" stroke="#141412" stroke-width="7"/>
+  <text x="100" y="124" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="66" fill="#E8451F">oz</text>
+  <text x="232" y="132" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="130" letter-spacing="-6" fill="#141412">ounce</text>
+  <text x="236" y="168" font-family="ui-monospace, Menlo, monospace" font-size="17" letter-spacing="6" fill="#8a877f">EVERYTHING HAS WEIGHT</text>
+</svg>

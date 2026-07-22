@@ -18,16 +18,24 @@
 
 // server-trusted prices, in minor units (pence). Source of truth for charges.
 const CATALOGUE = {
-  "oz-01": { name: "Heavyweight Hoodie", price: 18000 },
-  "oz-02": { name: "14oz Selvedge Denim", price: 24000 },
-  "oz-03": { name: "Gram Tee", price: 6500 },
-  "oz-04": { name: "Featherweight Shell", price: 32000 },
-  "oz-05": { name: "Ballast Cargo", price: 21000 },
-  "oz-06": { name: "Counterweight Knit", price: 19500 },
-  "oz-07": { name: "Troy Beanie", price: 5500 },
-  "oz-08": { name: "Density Overshirt", price: 23000 },
-  "oz-09": { name: "Null Socks", price: 2200 },
-  "oz-10": { name: "Standard Sweatpant", price: 15000 },
+  "tee-light":    { name: "Lightweight Tee", price: 4500 },
+  "tee-mid":      { name: "Midweight Tee", price: 5500 },
+  "tee-heavy":    { name: "Heavyweight Tee", price: 6500 },
+  "hoodie-light": { name: "Lightweight Hoodie", price: 11000 },
+  "hoodie-mid":   { name: "Midweight Hoodie", price: 13000 },
+  "hoodie-heavy": { name: "Heavyweight Hoodie", price: 15000 },
+  "pant-light":   { name: "Lightweight Sweatpant", price: 9500 },
+  "pant-mid":     { name: "Midweight Sweatpant", price: 11500 },
+  "pant-heavy":   { name: "Heavyweight Sweatpant", price: 13500 },
+  "short-light":  { name: "Lightweight Sweatshort", price: 7000 },
+  "short-mid":    { name: "Midweight Sweatshort", price: 8500 },
+  "short-heavy":  { name: "Heavyweight Sweatshort", price: 10000 },
+  "beanie-light": { name: "Lightweight Fisherman Beanie", price: 4000 },
+  "beanie-mid":   { name: "Midweight Fisherman Beanie", price: 4500 },
+  "beanie-heavy": { name: "Heavyweight Fisherman Beanie", price: 5000 },
+  "cap-light":    { name: "Lightweight Dad Cap", price: 4000 },
+  "cap-mid":      { name: "Midweight Dad Cap", price: 4500 },
+  "cap-heavy":    { name: "Heavyweight Dad Cap", price: 5000 },
 };
 
 // Vercel-style handler (Node). Netlify wrapper is exported below too.
@@ -63,7 +71,7 @@ module.exports = async function handler(req, res) {
             unit_amount: p.price,
             product_data: {
               name: p.name,
-              description: i.size ? `Size ${i.size}` : undefined,
+              description: [i.color, i.size ? `Size ${i.size}` : null].filter(Boolean).join(" · ") || undefined,
             },
           },
         };

@@ -242,16 +242,29 @@ body::after {
 .card__info { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 14px 20px; gap: 12px; }
 .card__name { font-size: 14px; font-weight: 500; letter-spacing: -0.01em; }
 .card__sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ash); text-transform: uppercase; margin-top: 3px; }
+.card__dots { display: flex; gap: 5px; margin-top: 9px; }
+.card__dot { width: 10px; height: 10px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line); }
 .card__price { font-family: var(--mono); font-size: 12px; white-space: nowrap; }
 
 /* ============================================================
    PRODUCT DETAIL
    ============================================================ */
 .pdp { display: grid; grid-template-columns: 1.5fr 1fr; gap: 0; min-height: 100vh; }
-.pdp__gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line-2); border-right: 1px solid var(--line); }
+.pdp__gallery { display: flex; flex-direction: column; gap: 1px; background: var(--line-2); border-right: 1px solid var(--line); }
+.pdp__main { aspect-ratio: 4/5; background: var(--paper-2); overflow: hidden; }
+.pdp__main img { width: 100%; height: 100%; object-fit: cover; }
+.pdp__thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line-2); }
+.pdp__thumb { aspect-ratio: 1/1; background: var(--paper-2); overflow: hidden; position: relative; transition: box-shadow 0.25s var(--ease); }
+.pdp__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.pdp__thumb[data-active="true"] { box-shadow: inset 0 0 0 2px var(--ink); }
+/* legacy multi-shot gallery (still used elsewhere) */
 .pdp__shot { aspect-ratio: 4/5; background: var(--paper-2); position: relative; overflow: hidden; }
-.pdp__shot:first-child { grid-column: 1 / -1; aspect-ratio: 16/12; }
 .pdp__shot img { width: 100%; height: 100%; object-fit: cover; }
+
+.colors { display: flex; gap: 10px; margin: 10px 0 4px; }
+.swatch { width: 34px; height: 34px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line); transition: box-shadow 0.2s var(--ease); }
+.swatch:hover { box-shadow: inset 0 0 0 1px var(--ink); }
+.swatch[data-active="true"] { box-shadow: inset 0 0 0 2px var(--paper), 0 0 0 2px var(--ink); }
 .pdp__panel { position: sticky; top: var(--nav-h); align-self: start; height: calc(100vh - var(--nav-h)); overflow-y: auto; padding: clamp(28px, 4vw, 56px) clamp(24px, 3.5vw, 56px); display: flex; flex-direction: column; }
 .pdp__eyebrow { display: flex; justify-content: space-between; margin-bottom: 28px; }
 .pdp__title { font-size: clamp(34px, 4.5vw, 58px); font-weight: 700; letter-spacing: -0.04em; line-height: 0.92; margin-bottom: 14px; }
@@ -492,228 +505,254 @@ body::after {
 <main id="app"></main>
 <script>
 /* ============================================================
-   OUNCE — catalogue + generative artwork
+   OUNCE — catalogue + brand marks + generative garment artwork
    ------------------------------------------------------------
-   Product imagery is generated as abstract, on-brand SVG so the
-   store is 100% self-contained and looks intentional out of the
-   box. To use real photography instead, give a product an
-   `images: ['/assets/img/oz-01-front.jpg', ...]` array — the
-   store will use those and ignore the generated art.
+   6 garments × 3 weights = 18 products. Each product ships in
+   3 colourways (Black / Grey / White), chosen on the product
+   page. Artwork is generated as clean technical "flats" in the
+   selected colour, stamped with the ounce logo — so the store
+   is complete with zero photography. Drop in real photos any
+   time via a product's `images: {Black:[...],Grey:[...]}` map.
    ============================================================ */
 
 const CURRENCY = { code: "GBP", symbol: "£" };
 
+/* -------- colourways -------- */
+const COLORS = {
+  Black: { garment: "#1c1c1a", seam: "#000000", swatch: "#1c1c1a" },
+  Grey:  { garment: "#9d9d97", seam: "#6f6f69", swatch: "#9d9d97" },
+  White: { garment: "#F4F2EB", seam: "#CBC5B7", swatch: "#EFEDE6" },
+};
+const COLORWAYS = ["Black", "Grey", "White"];
+
+/* -------- product factory -------- */
+const APPAREL_SIZES = [["XS", true], ["S", true], ["M", true], ["L", true], ["XL", true], ["XXL", true]];
+const OS = [["OS", true]];
+
+function P(o) { return Object.assign({ colors: COLORWAYS, sizes: APPAREL_SIZES, madeIn: "Portugal" }, o); }
+
 const PRODUCTS = [
-  {
-    id: "oz-01", code: "OZ—01", name: "Heavyweight Hoodie", category: "outerwear",
-    price: 180, mass: 620, colorway: "Bone",
-    fabric: "480gsm brushed-back loopback cotton", madeIn: "Portugal",
-    fit: "Boxy, dropped shoulder",
-    palette: ["#E5E2DA", "#141412", "#C9C5BA"],
-    sizes: [["XS", true], ["S", true], ["M", true], ["L", true], ["XL", true], ["XXL", false]],
-    desc: "The anchor of the line. A single-weight hood cut heavy enough to hold its shape and soften over years, not washes. Blank on purpose.",
-    featured: true, drop: 1,
-  },
-  {
-    id: "oz-02", code: "OZ—02", name: "14oz Selvedge Denim", category: "bottoms",
-    price: 240, mass: 890, colorway: "Raw Indigo",
-    fabric: "14oz unsanforized selvedge, Kaihara mill", madeIn: "Japan",
-    fit: "Straight, mid-rise",
-    palette: ["#20303F", "#0B1620", "#3C5266"],
-    sizes: [["28", true], ["30", true], ["32", true], ["34", true], ["36", true], ["38", true]],
-    desc: "Loomed narrow, hemmed clean. Sold rigid — it belongs to whoever wears it in. Expect fades at the ounce it was named for.",
-    featured: true, drop: 1,
-  },
-  {
-    id: "oz-03", code: "OZ—03", name: "Gram Tee", category: "tops",
-    price: 65, mass: 180, colorway: "Chalk",
-    fabric: "220gsm compact organic jersey", madeIn: "Portugal",
-    fit: "Regular, structured collar",
-    palette: ["#EFEDE6", "#141412", "#D8D4C9"],
-    sizes: [["XS", true], ["S", true], ["M", true], ["L", true], ["XL", true], ["XXL", true]],
-    desc: "Every gram accounted for. A dense-knit blank with a collar that survives the machine. Buy three.",
-    featured: false, drop: 2,
-  },
-  {
-    id: "oz-04", code: "OZ—04", name: "Featherweight Shell", category: "outerwear",
-    price: 320, mass: 240, colorway: "Storm",
-    fabric: "3-layer recycled ripstop, 10k/10k", madeIn: "Vietnam",
-    fit: "Relaxed, articulated",
-    palette: ["#5C6066", "#20232A", "#878C93"],
-    sizes: [["S", true], ["M", true], ["L", true], ["XL", false]],
-    desc: "Two-hundred-forty grams of weather between you and the day. Taped seams, no branding, a hood that actually works.",
-    featured: true, drop: 1,
-  },
-  {
-    id: "oz-05", code: "OZ—05", name: "Ballast Cargo", category: "bottoms",
-    price: 210, mass: 540, colorway: "Field Olive",
-    fabric: "Garment-dyed cotton ripstop", madeIn: "Portugal",
-    fit: "Wide, cropped ankle",
-    palette: ["#4A4A38", "#23241B", "#6E6E55"],
-    sizes: [["28", true], ["30", true], ["32", true], ["34", true], ["36", false]],
-    desc: "Weight where you want it. Deep bellows pockets, a hem that breaks once. Dyed after the fact so no two settle the same.",
-    featured: false, drop: 2,
-  },
-  {
-    id: "oz-06", code: "OZ—06", name: "Counterweight Knit", category: "knitwear",
-    price: 195, mass: 480, colorway: "Oat",
-    fabric: "7-gauge lambswool, fully fashioned", madeIn: "Scotland",
-    fit: "Regular, high crew",
-    palette: ["#D6CDB8", "#3A3428", "#B6AA8E"],
-    sizes: [["S", true], ["M", true], ["L", true], ["XL", true]],
-    desc: "Spun to balance the hood. A dense crew with saddle shoulders and a collar that stands on its own.",
-    featured: true, drop: 1,
-  },
-  {
-    id: "oz-07", code: "OZ—07", name: "Troy Beanie", category: "accessories",
-    price: 55, mass: 90, colorway: "Ink",
-    fabric: "Extrafine merino rib", madeIn: "Italy",
-    fit: "Cuffed, mid-depth",
-    palette: ["#16171A", "#050506", "#33353B"],
-    sizes: [["OS", true]],
-    desc: "Measured in troy, like the things worth keeping. A fine-gauge cuff that sits without slouch.",
-    featured: false, drop: 3,
-  },
-  {
-    id: "oz-08", code: "OZ—08", name: "Density Overshirt", category: "outerwear",
-    price: 230, mass: 610, colorway: "Slate",
-    fabric: "Double-face brushed wool-cotton", madeIn: "Portugal",
-    fit: "Boxy, shirt-jacket",
-    palette: ["#575A5E", "#25272A", "#7C7F84"],
-    sizes: [["S", true], ["M", true], ["L", true], ["XL", true], ["XXL", false]],
-    desc: "The in-between layer with real mass. Snaps hidden under a placket, a chest pocket sized for nothing in particular.",
-    featured: true, drop: 2,
-  },
-  {
-    id: "oz-09", code: "OZ—09", name: "Null Socks", category: "accessories",
-    price: 22, mass: 40, colorway: "Bone / Ink",
-    fabric: "Combed cotton terry, 2-pack", madeIn: "Portugal",
-    fit: "Crew, cushioned sole",
-    palette: ["#E5E2DA", "#141412", "#B7B3A8"],
-    sizes: [["OS", true]],
-    desc: "The lightest thing we make. Ribbed cuff, terry footbed, a tone-on-tone stripe you'll only notice up close.",
-    featured: false, drop: 3,
-  },
-  {
-    id: "oz-10", code: "OZ—10", name: "Standard Sweatpant", category: "bottoms",
-    price: 150, mass: 500, colorway: "Bone",
-    fabric: "480gsm loopback cotton", madeIn: "Portugal",
-    fit: "Tapered, elastic hem",
-    palette: ["#E5E2DA", "#141412", "#C9C5BA"],
-    sizes: [["XS", true], ["S", true], ["M", true], ["L", true], ["XL", true], ["XXL", true]],
-    desc: "Cut from the same cloth as the hood. A tapered pant with a drawcord you can actually cinch and a hem that stays put.",
-    featured: false, drop: 2,
-  },
+  /* ---------- T-SHIRTS ---------- */
+  P({ id: "tee-light", code: "OZ·T1", name: "Lightweight Tee", category: "T-Shirts", garment: "tee", tier: "Light",
+    price: 45, mass: 165, fabric: "180gsm combed organic cotton jersey", fit: "Regular, ribbed crew",
+    desc: "The everyday layer. A fine 180gsm jersey with enough body to hold its line but light enough for summer. Cut regular, ribbed at the collar." , drop: 2 }),
+  P({ id: "tee-mid", code: "OZ·T2", name: "Midweight Tee", category: "T-Shirts", garment: "tee", tier: "Mid",
+    price: 55, mass: 220, fabric: "240gsm compact cotton jersey", fit: "Regular, structured collar",
+    desc: "The one you'll reach for. A dense 240gsm knit with a collar that survives the machine and a hand that softens without thinning.", featured: true, drop: 1 }),
+  P({ id: "tee-heavy", code: "OZ·T3", name: "Heavyweight Tee", category: "T-Shirts", garment: "tee", tier: "Heavy",
+    price: 65, mass: 300, fabric: "300gsm loopback-backed cotton", fit: "Boxy, wide collar",
+    desc: "A tee with real mass. 300gsm, boxy through the body, built to stand on its own and outlast the drawer it lives in.", featured: true, drop: 1 }),
+
+  /* ---------- HOODIES ---------- */
+  P({ id: "hoodie-light", code: "OZ·H1", name: "Lightweight Hoodie", category: "Hoodies", garment: "hoodie", tier: "Light",
+    price: 110, mass: 480, fabric: "340gsm brushed loopback cotton", fit: "Regular, lined hood",
+    desc: "A hood for the in-between days. 340gsm brushed-back cotton, soft from the first wear, cut clean with a lined two-piece hood.", drop: 2 }),
+  P({ id: "hoodie-mid", code: "OZ·H2", name: "Midweight Hoodie", category: "Hoodies", garment: "hoodie", tier: "Mid",
+    price: 130, mass: 620, fabric: "440gsm loopback cotton", fit: "Boxy, dropped shoulder",
+    desc: "The middle weight that does the most work. 440gsm loopback, boxy with a dropped shoulder, a hood that actually holds its shape.", featured: true, drop: 1 }),
+  P({ id: "hoodie-heavy", code: "OZ·H3", name: "Heavyweight Hoodie", category: "Hoodies", garment: "hoodie", tier: "Heavy",
+    price: 150, mass: 780, fabric: "500gsm brushed-back loopback cotton", fit: "Boxy, dropped shoulder",
+    desc: "The anchor of the line. 500gsm, heavy enough to hold its shape and soften over years, not washes. Blank on purpose.", featured: true, drop: 1 }),
+
+  /* ---------- SWEATPANTS ---------- */
+  P({ id: "pant-light", code: "OZ·P1", name: "Lightweight Sweatpant", category: "Sweatpants", garment: "pant", tier: "Light",
+    price: 95, mass: 420, fabric: "340gsm brushed loopback cotton", fit: "Tapered, elastic cuff",
+    desc: "Cut to match the light hood. 340gsm brushed cotton, tapered leg, a drawcord you can actually cinch and a cuff that stays put.", drop: 2 }),
+  P({ id: "pant-mid", code: "OZ·P2", name: "Midweight Sweatpant", category: "Sweatpants", garment: "pant", tier: "Mid",
+    price: 115, mass: 540, fabric: "440gsm loopback cotton", fit: "Straight, elastic cuff",
+    desc: "The everyday sweat. 440gsm loopback, a straighter leg with weight to it, seams flat to the skin.", drop: 1 }),
+  P({ id: "pant-heavy", code: "OZ·P3", name: "Heavyweight Sweatpant", category: "Sweatpants", garment: "pant", tier: "Heavy",
+    price: 135, mass: 680, fabric: "500gsm brushed-back loopback cotton", fit: "Relaxed, elastic cuff",
+    desc: "Sunday weight. 500gsm to match the heavy hood — relaxed through the thigh, cuffed at the ankle, made to be lived in.", featured: true, drop: 1 }),
+
+  /* ---------- SWEATSHORTS ---------- */
+  P({ id: "short-light", code: "OZ·S1", name: "Lightweight Sweatshort", category: "Shorts", garment: "short", tier: "Light",
+    price: 70, mass: 260, fabric: "340gsm brushed loopback cotton", fit: "7\" inseam, elastic waist",
+    desc: "The lightest way to wear the weight. 340gsm brushed cotton, a clean 7-inch short with an elastic waist and hidden drawcord.", drop: 2 }),
+  P({ id: "short-mid", code: "OZ·S2", name: "Midweight Sweatshort", category: "Shorts", garment: "short", tier: "Mid",
+    price: 85, mass: 340, fabric: "440gsm loopback cotton", fit: "8\" inseam, elastic waist",
+    desc: "The match to the mid sweat. 440gsm loopback, an 8-inch inseam that breaks once, deep side pockets.", featured: true, drop: 1 }),
+  P({ id: "short-heavy", code: "OZ·S3", name: "Heavyweight Sweatshort", category: "Shorts", garment: "short", tier: "Heavy",
+    price: 100, mass: 430, fabric: "500gsm brushed-back loopback cotton", fit: "9\" inseam, elastic waist",
+    desc: "Shorts with heft. 500gsm to sit heavy and drape clean, a longer 9-inch cut, ribbed waistband.", drop: 1 }),
+
+  /* ---------- FISHERMAN BEANIES ---------- */
+  P({ id: "beanie-light", code: "OZ·B1", name: "Lightweight Fisherman Beanie", category: "Beanies", garment: "beanie", tier: "Light",
+    price: 40, mass: 80, fabric: "Fine-gauge extrafine merino", fit: "Short roll, mid-depth", sizes: OS, madeIn: "Italy",
+    desc: "A fine-knit fisherman in extrafine merino. A short roll that sits above the ear, no slouch, no bulk.", drop: 3 }),
+  P({ id: "beanie-mid", code: "OZ·B2", name: "Midweight Fisherman Beanie", category: "Beanies", garment: "beanie", tier: "Mid",
+    price: 45, mass: 110, fabric: "Mid-gauge lambswool", fit: "Classic roll, mid-depth", sizes: OS, madeIn: "Scotland",
+    desc: "The everyday roll. Mid-gauge lambswool with a defined cuff and an embroidered ounce mark at the fold.", featured: true, drop: 1 }),
+  P({ id: "beanie-heavy", code: "OZ·B3", name: "Heavyweight Fisherman Beanie", category: "Beanies", garment: "beanie", tier: "Heavy",
+    price: 50, mass: 150, fabric: "Chunky-gauge wool", fit: "Deep roll, high crown", sizes: OS, madeIn: "Scotland",
+    desc: "The winter weight. Chunky wool with a deep roll that pulls down over the ears and holds its shape all season.", drop: 1 }),
+
+  /* ---------- DAD CAPS ---------- */
+  P({ id: "cap-light", code: "OZ·C1", name: "Lightweight Dad Cap", category: "Caps", garment: "cap", tier: "Light",
+    price: 40, mass: 90, fabric: "Washed lightweight twill", fit: "6-panel, curved brim", sizes: OS,
+    desc: "A soft, sun-faded twill six-panel. Unstructured crown, curved brim, an ounce mark embroidered low on the front.", drop: 3 }),
+  P({ id: "cap-mid", code: "OZ·C2", name: "Midweight Dad Cap", category: "Caps", garment: "cap", tier: "Mid",
+    price: 45, mass: 120, fabric: "Brushed cotton twill", fit: "6-panel, curved brim", sizes: OS,
+    desc: "The everyday cap. Brushed cotton with a little more body, a metal buckle strap and a clean tonal ounce mark.", featured: true, drop: 1 }),
+  P({ id: "cap-heavy", code: "OZ·C3", name: "Heavyweight Dad Cap", category: "Caps", garment: "cap", tier: "Heavy",
+    price: 50, mass: 150, fabric: "Heavy cotton canvas", fit: "6-panel, curved brim", sizes: OS,
+    desc: "A cap with structure. Heavy canvas that breaks in over time, a flat curved brim and a woven ounce label at the back.", drop: 1 }),
 ];
 
-/* -------- deterministic pseudo-random (seeded) -------- */
-function seeded(seedStr) {
-  let h = 1779033703 ^ seedStr.length;
-  for (let i = 0; i < seedStr.length; i++) {
-    h = Math.imul(h ^ seedStr.charCodeAt(i), 3432918353);
-    h = (h << 13) | (h >>> 19);
-  }
-  return function () {
-    h = Math.imul(h ^ (h >>> 16), 2246822507);
-    h = Math.imul(h ^ (h >>> 13), 3266489909);
-    h ^= h >>> 16;
-    return (h >>> 0) / 4294967296;
-  };
+/* ============================================================
+   BRAND MARKS — the ounce logo, as reusable SVG fragments
+   ============================================================ */
+
+/* the coin: a weight/token carrying the oz unit */
+function ounceCoin(cx, cy, r, stroke, ink) {
+  return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${stroke}" stroke-width="${Math.max(1.5, r * 0.09)}"/>` +
+    `<text x="${cx}" y="${cy + r * 0.34}" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="${r * 0.86}" fill="${ink}">oz</text></g>`;
 }
 
-/* -------- generative artwork ---------------------------
-   Returns an SVG string. `variant` 0 = primary, 1 = alt.
-   Compositions vary by category but share a language:
-   paper ground, one mass, structural lines, an oz mark.  */
-function ounceArt(p, variant = 0, opts = {}) {
-  const rnd = seeded(p.id + ":" + variant);
-  const w = 800, h = 1000;
-  const [c1, c2, c3] = p.palette;
-  const light = mixHex(c1, "#ffffff", 0.4);
+/* the wordmark: ounce, tight Helvetica, with an oz tick */
+function ounceWordmark(x, y, h, fill, accent) {
+  return `<text x="${x}" y="${y}" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="${h}" letter-spacing="${-h * 0.045}" fill="${fill}">ounce` +
+    `<tspan font-family="ui-monospace, monospace" font-weight="400" font-size="${h * 0.38}" dy="${-h * 0.42}" fill="${accent || fill}"> oz</tspan></text>`;
+}
 
-  // NOTE: no <defs>/gradient/filter — internal url(#id) refs don't
-  // resolve when an SVG is loaded as a data: URI inside <img>. We use
-  // solid fills only; page-wide film grain is handled globally in CSS.
-  const ground = mixHex(light, c1, 0.5);
-  const hi = mixHex(light, "#ffffff", 0.5);
+/* a small woven brand tab sewn to a garment */
+function ounceTab(x, y, w, ink) {
+  const hgt = w * 0.34;
+  return `<g><rect x="${x}" y="${y}" width="${w}" height="${hgt}" rx="2" fill="${ink}"/>` +
+    `<text x="${x + w / 2}" y="${y + hgt * 0.7}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="${hgt * 0.62}" letter-spacing="-0.5" fill="${ink === '#E8451F' ? '#fff' : (ink === '#1c1c1a' ? '#EDEBE4' : '#1c1c1a')}">ounce</text></g>`;
+}
 
-  let body = "";
-  const cat = p.category;
+/* ============================================================
+   GENERATIVE GARMENT FLATS
+   ounceArt(product, view, { color })  → SVG string
+   view 0 = front, 1 = back, 2 = folded/detail
+   ============================================================ */
 
-  if (cat === "outerwear" || cat === "knitwear") {
-    // a large soft garment mass, offset; a heavy circle = the weight
-    const ox = 150 + rnd() * 80, oy = 200 + rnd() * 60;
-    const bw = 500, bh = 620;
-    body += `<rect x="${ox}" y="${oy}" width="${bw}" height="${bh}" rx="34" fill="${c2}" opacity="0.92"/>`;
-    body += `<rect x="${ox + 46}" y="${oy + 40}" width="${bw - 92}" height="${bh - 80}" rx="20" fill="none" stroke="${light}" stroke-width="1.5" opacity="0.35"/>`;
-    // sleeve/negative marks
-    body += `<rect x="${ox - 70}" y="${oy + 30}" width="90" height="300" rx="30" fill="${c2}" opacity="0.7"/>`;
-    body += `<rect x="${ox + bw - 20}" y="${oy + 30}" width="90" height="300" rx="30" fill="${c2}" opacity="0.7"/>`;
-    const r = 60 + rnd() * 30;
-    body += `<circle cx="${ox + bw - 40}" cy="${oy + bh - 40}" r="${r}" fill="${c3}"/>`;
-  } else if (cat === "bottoms") {
-    const ox = 250 + rnd() * 40, oy = 120;
-    body += `<rect x="${ox}" y="${oy}" width="150" height="720" rx="24" fill="${c2}" opacity="0.92"/>`;
-    body += `<rect x="${ox + 160}" y="${oy}" width="150" height="720" rx="24" fill="${c2}" opacity="0.82"/>`;
-    body += `<line x1="${ox + 155}" y1="${oy}" x2="${ox + 155}" y2="${oy + 720}" stroke="${light}" stroke-width="1.5" opacity="0.4"/>`;
-    body += `<circle cx="${ox + 155}" cy="${oy + 620}" r="72" fill="${c3}"/>`;
-  } else {
-    // accessories / tops: a centered stack + big weight
-    const cx = 400, cy = 500;
-    if (cat === "tops") {
-      body += `<rect x="200" y="240" width="400" height="480" rx="26" fill="${c2}" opacity="0.92"/>`;
-      body += `<rect x="150" y="270" width="80" height="200" rx="26" fill="${c2}" opacity="0.7"/>`;
-      body += `<rect x="570" y="270" width="80" height="200" rx="26" fill="${c2}" opacity="0.7"/>`;
-      body += `<circle cx="400" cy="300" r="60" fill="${ground}"/>`; // collar hole
-    } else {
-      for (let i = 0; i < 3; i++) {
-        const yy = 340 + i * 120, ww = 360 - i * 40;
-        body += `<rect x="${cx - ww / 2}" y="${yy}" width="${ww}" height="86" rx="43" fill="${c2}" opacity="${0.9 - i * 0.15}"/>`;
-      }
-    }
-    body += `<circle cx="${cx + 150}" cy="${cy + 210}" r="80" fill="${c3}"/>`;
-  }
+function ounceArt(p, view = 0, opts = {}) {
+  const W = 800, H = 1000;
+  const colorName = opts.color || p.colors[0];
+  const col = COLORS[colorName] || COLORS.Black;
+  const g = col.garment, seam = col.seam;
+  const isLight = colorName === "White";
+  // contrast tone for logos against the garment
+  const logoInk = isLight || colorName === "Grey" ? "#1c1c1a" : "#EDEBE4";
+  const bg1 = "#EFEDE7", bg2 = "#E3E0D8"; // studio paper, no gradient refs (data-URI safe)
+  const shadow = "rgba(20,20,18,0.10)";
 
-  // structural registration lines
-  body += `<g opacity="0.5" stroke="${c2}" stroke-width="1">
-    <line x1="60" y1="0" x2="60" y2="${h}"/><line x1="${w - 60}" y1="0" x2="${w - 60}" y2="${h}"/>
-    <line x1="0" y1="${h - 60}" x2="${w}" y2="${h - 60}"/></g>`;
+  let body = drawGarment(p.garment, view, { g, seam, logoInk, isLight, accent: "#E8451F" });
 
-  // typographic marks
-  const label = opts.label !== false;
-  let type = "";
-  if (label) {
-    type = `
-    <text x="60" y="66" font-family="ui-monospace, Menlo, monospace" font-size="20" letter-spacing="2" fill="${c2}">${p.code}</text>
-    <text x="${w - 60}" y="66" text-anchor="end" font-family="ui-monospace, Menlo, monospace" font-size="20" fill="${p.category === 'outerwear' ? '#E8451F' : c2}">${p.mass}<tspan font-size="12">G</tspan></text>
-    <text x="60" y="${h - 24}" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="44" letter-spacing="-2" fill="${c2}">ounce<tspan font-family="ui-monospace, monospace" font-size="16" dy="-18" fill="#E8451F"> oz</tspan></text>`;
+  // header marks: code + weight (kept subtle, catalogue style)
+  const head = `<text x="52" y="60" font-family="ui-monospace, Menlo, monospace" font-size="19" letter-spacing="1.5" fill="#8a877f">${p.code}</text>` +
+    `<text x="${W - 52}" y="60" text-anchor="end" font-family="ui-monospace, Menlo, monospace" font-size="19" fill="#E8451F">${p.mass}<tspan font-size="12" fill="#8a877f"> G</tspan></text>` +
+    `<text x="52" y="${H - 42}" font-family="ui-monospace, Menlo, monospace" font-size="15" letter-spacing="1" fill="#8a877f">${colorName.toUpperCase()}</text>` +
+    ounceWordmark(W - 210, H - 34, 34, "#1c1c1a", "#E8451F");
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${p.name} — ${colorName}">` +
+    `<rect width="${W}" height="${H}" fill="${bg1}"/>` +
+    `<rect y="${H * 0.52}" width="${W}" height="${H * 0.48}" fill="${bg2}"/>` +
+    `<ellipse cx="400" cy="880" rx="250" ry="26" fill="${shadow}"/>` +
+    body + head + `</svg>`;
+}
+
+/* individual garment silhouettes (flats) */
+function drawGarment(kind, view, s) {
+  const { g, seam, logoInk, isLight, accent } = s;
+  const sw = isLight ? 2 : 1.4;             // outline weight (whites need it)
+  const stroke = `stroke="${seam}" stroke-width="${sw}"`;
+  const seamLine = `stroke="${seam}" stroke-width="1" opacity="0.5" fill="none"`;
+  const fill = `fill="${g}"`;
+
+  if (kind === "tee") {
+    const neck = view === 1
+      ? `<path d="M338 250 Q400 286 462 250" ${seamLine}/>`                       // back collar
+      : `<path d="M330 258 Q400 322 470 258" fill="none" stroke="${seam}" stroke-width="${sw}"/>`;
+    return `<g>
+      <path d="M310 300 L214 336 L250 470 L300 452 L300 772 Q300 802 330 802 L470 802 Q500 802 500 772 L500 452 L550 470 L586 336 L490 300 C470 258 436 246 400 246 C364 246 330 258 310 300 Z" ${fill} ${stroke} stroke-linejoin="round"/>
+      ${neck}
+      <path d="M300 452 L262 466 M500 452 L538 466" ${seamLine}/>
+      ${view === 0 ? ounceCoin(340, 430, 20, logoInk, logoInk) : ""}
+      ${ounceTab(300, 762, 44, isLight ? "#1c1c1a" : "#E8451F")}
+    </g>`;
   }
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${p.name}">
-    <rect width="${w}" height="${h}" fill="${ground}"/>
-    <rect width="${w}" height="${h * 0.55}" fill="${hi}" opacity="0.6"/>
-    ${body}
-    ${type}
-  </svg>`;
+  if (kind === "hoodie") {
+    const hoodInner = isLight ? "#e9e6dd" : "rgba(0,0,0,0.16)";
+    return `<g>
+      <path d="M300 360 L168 520 L226 596 L332 470 Z" ${fill} ${stroke} stroke-linejoin="round"/>
+      <path d="M500 360 L632 520 L574 596 L468 470 Z" ${fill} ${stroke} stroke-linejoin="round"/>
+      <path d="M188 548 L246 604 M612 548 L554 604" ${seamLine}/>
+      <path d="M300 360 C300 180 500 180 500 360 L470 380 C470 288 330 288 330 380 Z" ${fill} ${stroke} stroke-linejoin="round"/>
+      <path d="M330 376 Q400 416 470 376 L470 336 Q400 292 330 336 Z" fill="${hoodInner}"/>
+      <path d="M282 366 L282 742 Q282 776 318 776 L482 776 Q518 776 518 742 L518 366 Q400 344 282 366 Z" ${fill} ${stroke} stroke-linejoin="round"/>
+      <rect x="336" y="574" width="128" height="112" rx="14" ${fill} ${stroke}/>
+      <path d="M336 608 L464 608" ${seamLine}/>
+      <line x1="382" y1="338" x2="382" y2="392" ${stroke}/><line x1="418" y1="338" x2="418" y2="392" ${stroke}/>
+      <circle cx="382" cy="394" r="5" fill="${logoInk}"/><circle cx="418" cy="394" r="5" fill="${logoInk}"/>
+      <path d="M282 752 L518 752" ${seamLine}/>
+      ${view === 0 ? ounceCoin(360, 470, 20, logoInk, logoInk) : ""}
+      ${ounceTab(306, 730, 46, isLight ? "#1c1c1a" : "#E8451F")}
+    </g>`;
+  }
+
+  if (kind === "pant") {
+    return `<g>
+      <rect x="286" y="220" width="228" height="52" rx="10" ${fill} ${stroke}/>
+      <path d="M286 264 L300 820 Q300 842 330 842 L376 842 Q396 842 398 820 L406 470 L410 470 L418 820 Q420 842 442 842 L490 842 Q514 842 514 820 L514 264 Z" ${fill} ${stroke} stroke-linejoin="round"/>
+      <line x1="408" y1="272" x2="408" y2="470" ${seamLine}/>
+      <path d="M300 812 Q360 826 398 812 M418 812 Q456 826 514 812" ${seamLine}/>
+      <path d="M330 244 Q345 262 360 244" fill="none" stroke="${logoInk}" stroke-width="3"/>
+      ${ounceCoin(474, 320, 18, logoInk, logoInk)}
+      ${ounceTab(300, 300, 42, isLight ? "#1c1c1a" : "#E8451F")}
+    </g>`;
+  }
+
+  if (kind === "short") {
+    return `<g>
+      <rect x="286" y="300" width="228" height="52" rx="10" ${fill} ${stroke}/>
+      <path d="M286 344 L296 610 Q296 632 326 632 L378 632 Q398 632 400 610 L406 500 L410 500 L416 610 Q418 632 440 632 L494 632 Q516 632 516 610 L514 344 Z" ${fill} ${stroke} stroke-linejoin="round"/>
+      <line x1="408" y1="352" x2="408" y2="500" ${seamLine}/>
+      <path d="M296 604 Q356 618 400 604 M416 604 Q460 618 516 604" ${seamLine}/>
+      <path d="M330 324 Q345 342 360 324" fill="none" stroke="${logoInk}" stroke-width="3"/>
+      ${ounceCoin(474, 396, 18, logoInk, logoInk)}
+      ${ounceTab(300, 384, 42, isLight ? "#1c1c1a" : "#E8451F")}
+    </g>`;
+  }
+
+  if (kind === "beanie") {
+    return `<g>
+      <path d="M276 560 Q276 300 400 300 Q524 300 524 560 Z" ${fill} ${stroke} stroke-linejoin="round"/>
+      <g stroke="${seam}" stroke-width="1.2" opacity="0.45">
+        <path d="M320 320 Q320 480 320 560" fill="none"/><path d="M360 306 Q360 470 360 560" fill="none"/>
+        <path d="M400 302 L400 560" fill="none"/><path d="M440 306 Q440 470 440 560" fill="none"/>
+        <path d="M480 320 Q480 480 480 560" fill="none"/>
+      </g>
+      <rect x="262" y="556" width="276" height="86" rx="14" ${fill} ${stroke}/>
+      <g stroke="${seam}" stroke-width="1" opacity="0.4"><line x1="262" y1="580" x2="538" y2="580"/><line x1="262" y1="618" x2="538" y2="618"/></g>
+      ${ounceWordmark(338, 610, 30, logoInk, isLight ? "#1c1c1a" : accent)}
+    </g>`;
+  }
+
+  if (kind === "cap") {
+    return `<g>
+      <path d="M250 470 Q250 300 400 300 Q550 300 550 470 Q400 452 250 470 Z" ${fill} ${stroke} stroke-linejoin="round"/>
+      <path d="M250 470 Q400 452 550 470 Q640 486 650 548 Q640 566 560 556 Q400 520 250 512 Q220 500 250 470 Z" ${fill} ${stroke} stroke-linejoin="round"/>
+      <g stroke="${seam}" stroke-width="1.2" opacity="0.4" fill="none"><path d="M400 302 L400 470"/><path d="M330 312 Q360 400 372 462"/><path d="M470 312 Q440 400 428 462"/></g>
+      <circle cx="400" cy="306" r="7" fill="${logoInk}"/>
+      ${ounceWordmark(330, 424, 30, logoInk, isLight ? "#1c1c1a" : accent)}
+    </g>`;
+  }
+
+  return "";
 }
 
-function mixHex(a, b, t) {
-  const pa = hx(a), pb = hx(b);
-  const c = pa.map((v, i) => Math.round(v + (pb[i] - v) * t));
-  return "#" + c.map((v) => v.toString(16).padStart(2, "0")).join("");
-}
-function hx(s) { s = s.replace("#", ""); return [0, 2, 4].map((i) => parseInt(s.slice(i, i + 2), 16)); }
-
-/* svg string -> data URI (for <img src>) */
-function artURI(p, variant = 0, opts) {
-  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(ounceArt(p, variant, opts));
-}
-
+/* -------- helpers -------- */
+function artURI(p, view = 0, opts) { return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(ounceArt(p, view, opts)); }
+function colorSwatch(name) { return (COLORS[name] || COLORS.Black).swatch; }
 function money(n) { return CURRENCY.symbol + n.toFixed(0); }
 function getProduct(id) { return PRODUCTS.find((p) => p.id === id); }
 
 
-const VIEWS = {"landing":"<!-- ============ HERO / THE WEIGHING ROOM ============ -->\n  <section class=\"hero\">\n    <canvas id=\"field\" aria-hidden=\"true\"></canvas>\n\n    <div class=\"hero__topline\">\n      <span>OUNCE® · SUPPLY CO.</span>\n      <div class=\"hero__readout\">\n        <span>ROOM MASS <b data-mass-readout>0 g</b></span>\n        <span>EST · MMXXV</span>\n      </div>\n    </div>\n\n    <div class=\"hero__type\">\n      <h1 class=\"hero__mark\">ounce<span class=\"oz\">oz</span></h1>\n    </div>\n\n    <div class=\"hero__foot\">\n      <p class=\"hero__blurb\">A clothing line measured in grams. <span class=\"dim\">Heavyweight essentials, cut clean, sold blank — everything here has weight.</span></p>\n      <div class=\"hero__cta\">\n        <a class=\"btn btn--void\" href=\"#/shop\">Enter the shop</a>\n        <a class=\"btn\" style=\"background:transparent;color:var(--chalk);box-shadow:inset 0 0 0 1px var(--void-line)\" href=\"#/lookbook\">Lookbook</a>\n      </div>\n    </div>\n\n    <div class=\"hint\">Move · drag · drop a weight</div>\n  </section>\n\n  <!-- ============ UNIT TICKER ============ -->\n  <div class=\"units\">\n    <div class=\"units__track\">\n      <span>1 OUNCE = <b>28.349523 G</b></span>\n      <span>16 OZ = <b>1 LB</b></span>\n      <span>1 TROY OZ = <b>31.103 G</b></span>\n      <span>MADE TO <b>OUTLIVE</b></span>\n      <span>NO LOGOS · <b>ONLY MASS</b></span>\n      <span>DENIM · <b>14 OZ</b></span>\n      <span>SHIPPED FROM <b>LISBON</b></span>\n      <span>1 OUNCE = <b>28.349523 G</b></span>\n    </div>\n  </div>\n\n  <!-- ============ STATEMENT ============ -->\n  <section class=\"act act--paper\">\n    <div class=\"wrap split\">\n      <div class=\"split__big\" data-reveal>Weight<br>is the<br><em>proof.</em></div>\n      <div class=\"split__body\" data-reveal>\n        <span class=\"label\">01 — The idea</span>\n        We started with a simple bias: the clothes that last are the ones you can feel.\n        Denser cloth, cleaner cuts, nothing shouting. Each ounce piece lists its mass in grams\n        on the label — a receipt for the substance you're paying for. Buy less. Feel more.\n      </div>\n    </div>\n  </section>\n\n  <!-- ============ THREE DROPS ============ -->\n  <section class=\"act\">\n    <div class=\"wrap\">\n      <div class=\"rail-head\" data-reveal>\n        <h2>The Weights</h2>\n        <a href=\"#/shop\">All pieces →</a>\n      </div>\n      <div class=\"drops\">\n        <a class=\"drop\" href=\"#/shop?c=outerwear\" data-reveal>\n          <div class=\"drop__n\">DROP 01</div>\n          <div class=\"drop__title\">Heavy<br>Layers</div>\n          <div class=\"drop__meta\"><span>Outerwear</span><span class=\"oz\">480—890 g</span></div>\n        </a>\n        <a class=\"drop\" href=\"#/shop?c=knitwear\" data-reveal>\n          <div class=\"drop__n\">DROP 02</div>\n          <div class=\"drop__title\">Spun<br>&amp; Fashioned</div>\n          <div class=\"drop__meta\"><span>Knitwear</span><span class=\"oz\">7-gauge</span></div>\n        </a>\n        <a class=\"drop\" href=\"#/shop?c=accessories\" data-reveal>\n          <div class=\"drop__n\">DROP 03</div>\n          <div class=\"drop__title\">The<br>Lightest</div>\n          <div class=\"drop__meta\"><span>Accessories</span><span class=\"oz\">40—90 g</span></div>\n        </a>\n      </div>\n    </div>\n  </section>\n\n  <!-- ============ FEATURED RAIL ============ -->\n  <section class=\"act\" style=\"padding-top:0\">\n    <div class=\"wrap\">\n      <div class=\"rail-head\" data-reveal>\n        <h2>Selected</h2>\n        <a href=\"#/shop\">Shop all →</a>\n      </div>\n      <div class=\"grid\" data-featured-rail data-reveal></div>\n    </div>\n  </section>\n\n  <!-- ============ CLOSING STATEMENT ============ -->\n  <section class=\"act act--paper\">\n    <div class=\"wrap split\">\n      <div class=\"split__body\" data-reveal>\n        <span class=\"label\">02 — The promise</span>\n        Made in small runs in Portugal, Japan, Scotland and Italy. Sold direct, priced by what it costs\n        to do right, returned free within thirty days. When it finally wears through, we'll help you mend it.\n      </div>\n      <div class=\"split__big\" style=\"text-align:right\" data-reveal>Own<br>less,<br><em>heavier.</em></div>\n    </div>\n  </section>","shop":"<main class=\"page\">\n    <div class=\"wrap\">\n      <header class=\"shop-head\">\n        <h1>Shop<span style=\"color:var(--signal)\">.</span></h1>\n        <div class=\"shop-head__meta\">\n          <p class=\"mono\" style=\"color:var(--ash)\"><span data-shop-count>00</span> pieces · one capsule · restocked by mass</p>\n          <p style=\"margin-top:8px\">Every price is what it costs to make it well. Every piece lists its weight.</p>\n        </div>\n      </header>\n    </div>\n\n    <div class=\"wrap\">\n      <div class=\"filters\" data-filters></div>\n      <div class=\"grid\" data-shop-grid style=\"margin-top:1px\"></div>\n    </div>\n\n    <div class=\"wrap\" style=\"margin-top:1px\">\n      <div class=\"marquee\">\n        <div class=\"marquee__track\">\n          <span>FREE SHIPPING OVER <span class=\"oz\">£200</span></span>\n          <span>30-DAY RETURNS</span>\n          <span>MADE IN SMALL RUNS</span>\n          <span>MEASURED IN <span class=\"oz\">GRAMS</span></span>\n          <span>SHIPPED FROM LISBON</span>\n        </div>\n      </div>\n    </div>\n  </main>","product":"<main class=\"page\">\n    <div class=\"pdp\" data-pdp></div>\n\n    <section class=\"wrap related\">\n      <h3>You might also carry</h3>\n      <div class=\"grid\" data-related></div>\n    </section>\n  </main>","lookbook":"<main class=\"page\">\n    <section class=\"wrap editorial\">\n      <div class=\"mono\" style=\"display:flex;justify-content:space-between;color:var(--ash)\">\n        <span>Volume 01</span><span>Study of Mass</span><span>MMXXV</span>\n      </div>\n      <p class=\"lede\" style=\"margin-top:32px\" data-reveal>Cloth, <span class=\"dim\">held still</span><br>long enough to<br>feel its weight.</p>\n    </section>\n\n    <!-- generative editorial grid -->\n    <div class=\"wrap\">\n      <div class=\"look-grid\">\n        <div class=\"look s7 t169\" data-art=\"oz-01:0\" data-cap=\"OZ—01 · Heavyweight\"></div>\n        <div class=\"look s5 t45\" data-art=\"oz-04:2\" data-cap=\"OZ—04 · Shell\"></div>\n        <div class=\"look s4 t34\" data-art=\"oz-02:1\" data-cap=\"OZ—02 · 14oz\"></div>\n        <div class=\"look s4 t34\" data-art=\"oz-06:0\" data-cap=\"OZ—06 · Knit\"></div>\n        <div class=\"look s4 t34\" data-art=\"oz-08:1\" data-cap=\"OZ—08 · Overshirt\"></div>\n      </div>\n    </div>\n\n    <section class=\"wrap editorial\" style=\"text-align:center\">\n      <p class=\"lede\" style=\"margin-inline:auto\" data-reveal>Everything blank.<br><span class=\"dim\">Nothing empty.</span></p>\n    </section>\n\n    <div class=\"wrap\">\n      <div class=\"look-grid\">\n        <div class=\"look s6 t45\" data-art=\"oz-05:0\" data-cap=\"OZ—05 · Ballast\"></div>\n        <div class=\"look s6 t45\" data-art=\"oz-03:1\" data-cap=\"OZ—03 · Gram Tee\"></div>\n        <div class=\"look s12 t169 look--wide\" data-art=\"oz-01:1\" data-cap=\"Bone on bone\"></div>\n        <div class=\"look s5 t34\" data-art=\"oz-07:0\" data-cap=\"OZ—07 · Troy\"></div>\n        <div class=\"look s7 t45\" data-art=\"oz-10:2\" data-cap=\"OZ—10 · Standard\"></div>\n      </div>\n    </div>\n\n    <section class=\"wrap editorial\" style=\"display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap\">\n      <p class=\"lede\" data-reveal>Shot in <span class=\"dim\">available light,<br>Lisbon.</span></p>\n      <a class=\"btn\" href=\"#/shop\">Shop the volume →</a>\n    </section>\n  </main>","about":"<main class=\"page\">\n    <section class=\"wrap editorial\">\n      <p class=\"lede\" data-reveal>We make clothes<br>you can <span class=\"dim\">feel the<br>weight of.</span></p>\n    </section>\n\n    <div class=\"units\" style=\"border-color:var(--line)\">\n      <div class=\"units__track\">\n        <span style=\"color:var(--ash)\">EST. LISBON <b style=\"color:var(--ink)\">MMXXV</b></span>\n        <span style=\"color:var(--ash)\">DIRECT TO YOU</span>\n        <span style=\"color:var(--ash)\">SMALL RUNS</span>\n        <span style=\"color:var(--ash)\">NO SEASONS · <b style=\"color:var(--ink)\">ONLY WEIGHT</b></span>\n        <span style=\"color:var(--ash)\">MENDED, NOT REPLACED</span>\n      </div>\n    </div>\n\n    <section class=\"wrap about-grid\">\n      <div class=\"prose\" data-reveal>\n        <p>Ounce began with a scale and a suspicion. We kept noticing that the garments we reached for — the ones that outlived every trend — all had one thing in common. They were heavy. Denser cloth, more of it, held together better. So we made weight the whole point.</p>\n        <p>Every piece we release is weighed and its mass printed on the label, in grams. It's a receipt for substance: proof that when you pay for an ounce hoodie, you're paying for cloth, not marketing. We don't do logos, seasons, or noise. We do a small number of blank, considered things and make them as well as we can afford to.</p>\n        <p>They're cut in short runs by makers we can call by name — mills in Japan, knitters in Scotland, a small factory outside Lisbon. Sold straight to you so the money goes into the cloth. And when yours finally wears through, write to us; we'd rather help you mend it than sell you another.</p>\n      </div>\n      <div data-reveal>\n        <img src=\"\" data-about-art alt=\"ounce study\" style=\"width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--paper-2)\">\n        <p class=\"mono\" style=\"color:var(--ash);margin-top:12px\">FIG. 01 — MASS AS METHOD</p>\n      </div>\n    </section>\n\n    <section class=\"wrap\" style=\"padding-bottom:clamp(40px,8vw,90px)\">\n      <div class=\"mono\" style=\"color:var(--ash);padding-bottom:20px\">The rules we weigh against</div>\n      <div class=\"manifesto\" data-reveal>\n        <div><span class=\"n\">01</span><div><h4>Weight is honesty.</h4><p>If it matters, it should have mass. We print the grams so you can hold us to it.</p></div></div>\n        <div><span class=\"n\">02</span><div><h4>Blank on purpose.</h4><p>No logos, no slogans. The garment is the statement; you are the rest of it.</p></div></div>\n        <div><span class=\"n\">03</span><div><h4>Fewer, better, kept.</h4><p>We'd rather sell you one thing for a decade than ten things for a year.</p></div></div>\n        <div><span class=\"n\">04</span><div><h4>Made by names.</h4><p>Short runs, real makers, fair terms. Direct to you so the value stays in the cloth.</p></div></div>\n        <div><span class=\"n\">05</span><div><h4>Mended, not replaced.</h4><p>Repairs before replacements. The heaviest thing a garment can carry is time.</p></div></div>\n      </div>\n    </section>\n\n    <section class=\"wrap editorial\" style=\"text-align:center\">\n      <p class=\"lede\" style=\"margin-inline:auto\" data-reveal>Buy less.<br><span style=\"color:var(--signal)\">Heavier.</span></p>\n      <a class=\"btn\" style=\"margin-top:28px\" href=\"#/shop\">Enter the shop →</a>\n    </section>\n  </main>"};
+const VIEWS = {"landing":"<!-- ============ HERO / THE WEIGHING ROOM ============ -->\n  <section class=\"hero\">\n    <canvas id=\"field\" aria-hidden=\"true\"></canvas>\n\n    <div class=\"hero__topline\">\n      <span>OUNCE® · SUPPLY CO.</span>\n      <div class=\"hero__readout\">\n        <span>ROOM MASS <b data-mass-readout>0 g</b></span>\n        <span>EST · MMXXV</span>\n      </div>\n    </div>\n\n    <div class=\"hero__type\">\n      <h1 class=\"hero__mark\">ounce<span class=\"oz\">oz</span></h1>\n    </div>\n\n    <div class=\"hero__foot\">\n      <p class=\"hero__blurb\">A clothing line measured in grams. <span class=\"dim\">Heavyweight essentials, cut clean, sold blank — everything here has weight.</span></p>\n      <div class=\"hero__cta\">\n        <a class=\"btn btn--void\" href=\"#/shop\">Enter the shop</a>\n        <a class=\"btn\" style=\"background:transparent;color:var(--chalk);box-shadow:inset 0 0 0 1px var(--void-line)\" href=\"#/lookbook\">Lookbook</a>\n      </div>\n    </div>\n\n    <div class=\"hint\">Move · drag · drop a weight</div>\n  </section>\n\n  <!-- ============ UNIT TICKER ============ -->\n  <div class=\"units\">\n    <div class=\"units__track\">\n      <span>1 OUNCE = <b>28.349523 G</b></span>\n      <span>16 OZ = <b>1 LB</b></span>\n      <span>1 TROY OZ = <b>31.103 G</b></span>\n      <span>MADE TO <b>OUTLIVE</b></span>\n      <span>NO LOGOS · <b>ONLY MASS</b></span>\n      <span>DENIM · <b>14 OZ</b></span>\n      <span>SHIPPED FROM <b>LISBON</b></span>\n      <span>1 OUNCE = <b>28.349523 G</b></span>\n    </div>\n  </div>\n\n  <!-- ============ STATEMENT ============ -->\n  <section class=\"act act--paper\">\n    <div class=\"wrap split\">\n      <div class=\"split__big\" data-reveal>Weight<br>is the<br><em>proof.</em></div>\n      <div class=\"split__body\" data-reveal>\n        <span class=\"label\">01 — The idea</span>\n        We started with a simple bias: the clothes that last are the ones you can feel.\n        Denser cloth, cleaner cuts, nothing shouting. Each ounce piece lists its mass in grams\n        on the label — a receipt for the substance you're paying for. Buy less. Feel more.\n      </div>\n    </div>\n  </section>\n\n  <!-- ============ THREE DROPS ============ -->\n  <section class=\"act\">\n    <div class=\"wrap\">\n      <div class=\"rail-head\" data-reveal>\n        <h2>The Weights</h2>\n        <a href=\"#/shop\">All pieces →</a>\n      </div>\n      <div class=\"drops\">\n        <a class=\"drop\" href=\"#/shop?c=Hoodies\" data-reveal>\n          <div class=\"drop__n\">DROP 01</div>\n          <div class=\"drop__title\">The<br>Heavy Set</div>\n          <div class=\"drop__meta\"><span>Hoodies &amp; Sweats</span><span class=\"oz\">340—500 gsm</span></div>\n        </a>\n        <a class=\"drop\" href=\"#/shop?c=T-Shirts\" data-reveal>\n          <div class=\"drop__n\">DROP 02</div>\n          <div class=\"drop__title\">Everyday<br>Weight</div>\n          <div class=\"drop__meta\"><span>T-Shirts</span><span class=\"oz\">165—300 g</span></div>\n        </a>\n        <a class=\"drop\" href=\"#/shop?c=Caps\" data-reveal>\n          <div class=\"drop__n\">DROP 03</div>\n          <div class=\"drop__title\">Topped<br>Off</div>\n          <div class=\"drop__meta\"><span>Headwear</span><span class=\"oz\">80—150 g</span></div>\n        </a>\n      </div>\n    </div>\n  </section>\n\n  <!-- ============ FEATURED RAIL ============ -->\n  <section class=\"act\" style=\"padding-top:0\">\n    <div class=\"wrap\">\n      <div class=\"rail-head\" data-reveal>\n        <h2>Selected</h2>\n        <a href=\"#/shop\">Shop all →</a>\n      </div>\n      <div class=\"grid\" data-featured-rail data-reveal></div>\n    </div>\n  </section>\n\n  <!-- ============ CLOSING STATEMENT ============ -->\n  <section class=\"act act--paper\">\n    <div class=\"wrap split\">\n      <div class=\"split__body\" data-reveal>\n        <span class=\"label\">02 — The promise</span>\n        Made in small runs in Portugal, Japan, Scotland and Italy. Sold direct, priced by what it costs\n        to do right, returned free within thirty days. When it finally wears through, we'll help you mend it.\n      </div>\n      <div class=\"split__big\" style=\"text-align:right\" data-reveal>Own<br>less,<br><em>heavier.</em></div>\n    </div>\n  </section>","shop":"<main class=\"page\">\n    <div class=\"wrap\">\n      <header class=\"shop-head\">\n        <h1>Shop<span style=\"color:var(--signal)\">.</span></h1>\n        <div class=\"shop-head__meta\">\n          <p class=\"mono\" style=\"color:var(--ash)\"><span data-shop-count>00</span> pieces · one capsule · restocked by mass</p>\n          <p style=\"margin-top:8px\">Every price is what it costs to make it well. Every piece lists its weight.</p>\n        </div>\n      </header>\n    </div>\n\n    <div class=\"wrap\">\n      <div class=\"filters\" data-filters></div>\n      <div class=\"grid\" data-shop-grid style=\"margin-top:1px\"></div>\n    </div>\n\n    <div class=\"wrap\" style=\"margin-top:1px\">\n      <div class=\"marquee\">\n        <div class=\"marquee__track\">\n          <span>FREE SHIPPING OVER <span class=\"oz\">£200</span></span>\n          <span>30-DAY RETURNS</span>\n          <span>MADE IN SMALL RUNS</span>\n          <span>MEASURED IN <span class=\"oz\">GRAMS</span></span>\n          <span>SHIPPED FROM LISBON</span>\n        </div>\n      </div>\n    </div>\n  </main>","product":"<main class=\"page\">\n    <div class=\"pdp\" data-pdp></div>\n\n    <section class=\"wrap related\">\n      <h3>You might also carry</h3>\n      <div class=\"grid\" data-related></div>\n    </section>\n  </main>","lookbook":"<main class=\"page\">\n    <section class=\"wrap editorial\">\n      <div class=\"mono\" style=\"display:flex;justify-content:space-between;color:var(--ash)\">\n        <span>Volume 01</span><span>Study of Mass</span><span>MMXXV</span>\n      </div>\n      <p class=\"lede\" style=\"margin-top:32px\" data-reveal>Cloth, <span class=\"dim\">held still</span><br>long enough to<br>feel its weight.</p>\n    </section>\n\n    <!-- generative editorial grid -->\n    <div class=\"wrap\">\n      <div class=\"look-grid\">\n        <div class=\"look s7 t169\" data-art=\"hoodie-heavy:Black\" data-cap=\"OZ·H3 · Heavyweight Hoodie\"></div>\n        <div class=\"look s5 t45\" data-art=\"tee-mid:White\" data-cap=\"OZ·T2 · Midweight Tee\"></div>\n        <div class=\"look s4 t34\" data-art=\"pant-mid:Grey\" data-cap=\"OZ·P2 · Sweatpant\"></div>\n        <div class=\"look s4 t34\" data-art=\"beanie-mid:Grey\" data-cap=\"OZ·B2 · Fisherman\"></div>\n        <div class=\"look s4 t34\" data-art=\"cap-mid:Black\" data-cap=\"OZ·C2 · Dad Cap\"></div>\n      </div>\n    </div>\n\n    <section class=\"wrap editorial\" style=\"text-align:center\">\n      <p class=\"lede\" style=\"margin-inline:auto\" data-reveal>Everything blank.<br><span class=\"dim\">Nothing empty.</span></p>\n    </section>\n\n    <div class=\"wrap\">\n      <div class=\"look-grid\">\n        <div class=\"look s6 t45\" data-art=\"short-mid:White\" data-cap=\"OZ·S2 · Sweatshort\"></div>\n        <div class=\"look s6 t45\" data-art=\"tee-heavy:Black\" data-cap=\"OZ·T3 · Heavyweight Tee\"></div>\n        <div class=\"look s12 t169 look--wide\" data-art=\"hoodie-mid:Grey\" data-cap=\"Grey on grey\"></div>\n        <div class=\"look s5 t34\" data-art=\"beanie-heavy:Black\" data-cap=\"OZ·B3 · Fisherman\"></div>\n        <div class=\"look s7 t45\" data-art=\"pant-heavy:White\" data-cap=\"OZ·P3 · Sweatpant\"></div>\n      </div>\n    </div>\n\n    <section class=\"wrap editorial\" style=\"display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap\">\n      <p class=\"lede\" data-reveal>Shot in <span class=\"dim\">available light,<br>Lisbon.</span></p>\n      <a class=\"btn\" href=\"#/shop\">Shop the volume →</a>\n    </section>\n  </main>","about":"<main class=\"page\">\n    <section class=\"wrap editorial\">\n      <p class=\"lede\" data-reveal>We make clothes<br>you can <span class=\"dim\">feel the<br>weight of.</span></p>\n    </section>\n\n    <div class=\"units\" style=\"border-color:var(--line)\">\n      <div class=\"units__track\">\n        <span style=\"color:var(--ash)\">EST. LISBON <b style=\"color:var(--ink)\">MMXXV</b></span>\n        <span style=\"color:var(--ash)\">DIRECT TO YOU</span>\n        <span style=\"color:var(--ash)\">SMALL RUNS</span>\n        <span style=\"color:var(--ash)\">NO SEASONS · <b style=\"color:var(--ink)\">ONLY WEIGHT</b></span>\n        <span style=\"color:var(--ash)\">MENDED, NOT REPLACED</span>\n      </div>\n    </div>\n\n    <section class=\"wrap about-grid\">\n      <div class=\"prose\" data-reveal>\n        <p>Ounce began with a scale and a suspicion. We kept noticing that the garments we reached for — the ones that outlived every trend — all had one thing in common. They were heavy. Denser cloth, more of it, held together better. So we made weight the whole point.</p>\n        <p>Every piece we release is weighed and its mass printed on the label, in grams. It's a receipt for substance: proof that when you pay for an ounce hoodie, you're paying for cloth, not marketing. We don't do logos, seasons, or noise. We do a small number of blank, considered things and make them as well as we can afford to.</p>\n        <p>They're cut in short runs by makers we can call by name — mills in Japan, knitters in Scotland, a small factory outside Lisbon. Sold straight to you so the money goes into the cloth. And when yours finally wears through, write to us; we'd rather help you mend it than sell you another.</p>\n      </div>\n      <div data-reveal>\n        <img src=\"\" data-about-art alt=\"ounce study\" style=\"width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--paper-2)\">\n        <p class=\"mono\" style=\"color:var(--ash);margin-top:12px\">FIG. 01 — MASS AS METHOD</p>\n      </div>\n    </section>\n\n    <section class=\"wrap\" style=\"padding-bottom:clamp(40px,8vw,90px)\">\n      <div class=\"mono\" style=\"color:var(--ash);padding-bottom:20px\">The rules we weigh against</div>\n      <div class=\"manifesto\" data-reveal>\n        <div><span class=\"n\">01</span><div><h4>Weight is honesty.</h4><p>If it matters, it should have mass. We print the grams so you can hold us to it.</p></div></div>\n        <div><span class=\"n\">02</span><div><h4>Blank on purpose.</h4><p>No logos, no slogans. The garment is the statement; you are the rest of it.</p></div></div>\n        <div><span class=\"n\">03</span><div><h4>Fewer, better, kept.</h4><p>We'd rather sell you one thing for a decade than ten things for a year.</p></div></div>\n        <div><span class=\"n\">04</span><div><h4>Made by names.</h4><p>Short runs, real makers, fair terms. Direct to you so the value stays in the cloth.</p></div></div>\n        <div><span class=\"n\">05</span><div><h4>Mended, not replaced.</h4><p>Repairs before replacements. The heaviest thing a garment can carry is time.</p></div></div>\n      </div>\n    </section>\n\n    <section class=\"wrap editorial\" style=\"text-align:center\">\n      <p class=\"lede\" style=\"margin-inline:auto\" data-reveal>Buy less.<br><span style=\"color:var(--signal)\">Heavier.</span></p>\n      <a class=\"btn\" style=\"margin-top:28px\" href=\"#/shop\">Enter the shop →</a>\n    </section>\n  </main>"};
 /* ============================================================
    OUNCE — single-page app glue (built from the repo source)
    Provides: cart, persistent chrome, hash router, view inits,
@@ -727,13 +766,14 @@ const Cart = {
   items: [],
   load() { try { this.items = JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch { this.items = []; } },
   save() { localStorage.setItem(CART_KEY, JSON.stringify(this.items)); this.render(); },
-  key(id, size) { return id + "::" + size; },
-  add(id, size, qty = 1) {
+  key(id, size, color) { return id + "::" + size + "::" + color; },
+  add(id, size, color, qty = 1) {
     const p = getProduct(id); if (!p) return;
-    const k = this.key(id, size);
+    color = color || p.colors[0];
+    const k = this.key(id, size, color);
     const f = this.items.find((i) => i.k === k);
-    if (f) f.qty += qty; else this.items.push({ k, id, size, qty });
-    this.save(); toast("Added · " + p.name + " · " + size); this.open();
+    if (f) f.qty += qty; else this.items.push({ k, id, size, color, qty });
+    this.save(); toast("Added · " + p.name + " · " + color + " · " + size); this.open();
   },
   setQty(k, qty) { const it = this.items.find((i) => i.k === k); if (!it) return; it.qty = Math.max(0, qty); if (it.qty === 0) this.items = this.items.filter((i) => i.k !== k); this.save(); },
   remove(k) { this.items = this.items.filter((i) => i.k !== k); this.save(); },
@@ -750,8 +790,8 @@ const Cart = {
     if (this.items.length === 0) { body.innerHTML = '<div class="cart-empty"><span class="label">Nothing weighed yet</span><a class="btn btn--ghost" href="#/shop">Enter the shop</a></div>'; if (foot) foot.hidden = true; return; }
     if (foot) foot.hidden = false;
     body.innerHTML = this.items.map((i) => {
-      const p = getProduct(i.id); const img = p.images?.[0] || artURI(p, 0, { label: false });
-      return '<div class="cart-line"><div class="cart-line__media"><img src="' + img + '" alt="' + p.name + '"></div><div><div class="cart-line__name">' + p.name + '</div><div class="cart-line__meta">' + p.code + ' · Size ' + i.size + ' · ' + p.mass + 'g</div><div class="cart-line__qty"><button aria-label="Decrease" data-dec="' + i.k + '">–</button><span>' + i.qty + '</span><button aria-label="Increase" data-inc="' + i.k + '">+</button></div></div><div><div class="cart-line__price">' + money(p.price * i.qty) + '</div><button class="cart-line__rm" data-rm="' + i.k + '">Remove</button></div></div>';
+      const p = getProduct(i.id); const img = p.images?.[i.color]?.[0] || artURI(p, 0, { color: i.color });
+      return '<div class="cart-line"><div class="cart-line__media"><img src="' + img + '" alt="' + p.name + '"></div><div><div class="cart-line__name">' + p.name + '</div><div class="cart-line__meta">' + i.color + ' · Size ' + i.size + ' · ' + p.mass + 'g</div><div class="cart-line__qty"><button aria-label="Decrease" data-dec="' + i.k + '">–</button><span>' + i.qty + '</span><button aria-label="Increase" data-inc="' + i.k + '">+</button></div></div><div><div class="cart-line__price">' + money(p.price * i.qty) + '</div><button class="cart-line__rm" data-rm="' + i.k + '">Remove</button></div></div>';
     }).join("");
     document.querySelectorAll("[data-cart-subtotal]").forEach((el) => { el.textContent = money(this.subtotal()); });
     const mass = document.querySelector("[data-cart-mass]"); if (mass) mass.textContent = (this.mass() / 1000).toFixed(2) + " kg";
@@ -791,14 +831,15 @@ Cart.load();
 /* ---------------- shared card ---------------- */
 function cardHTML(p, opts) {
   opts = opts || {};
-  const primary = p.images?.[0] || artURI(p, 0);
-  const alt = p.images?.[1] || artURI(p, 1);
+  const primary = p.images?.[p.colors[0]]?.[0] || artURI(p, 0, { color: p.colors[0] });
+  const alt = p.images?.[p.colors[1]]?.[0] || artURI(p, 0, { color: p.colors[1] });
   const sold = p.sizes.every((s) => !s[1]);
+  const dots = p.colors.map((c) => '<span class="card__dot" style="background:' + colorSwatch(c) + '"></span>').join("");
   return '<a class="card" href="#/product/' + p.id + '"><div class="card__media"><img src="' + primary + '" alt="' + p.name + '" loading="lazy"><img class="alt" src="' + alt + '" alt="" aria-hidden="true" loading="lazy">' +
     (p.drop === 1 ? '<span class="card__tag">New</span>' : '') +
     (sold ? '<span class="card__tag card__tag--sold">Sold Out</span>' : '') +
     (opts.quick ? '<div class="card__quick"><span class="btn btn--ghost btn--block" style="background:var(--paper)">View · ' + money(p.price) + '</span></div>' : '') +
-    '</div><div class="card__info"><div><div class="card__name">' + p.name + '</div><div class="card__sub">' + (opts.sub ? opts.sub(p) : (p.code + ' · ' + p.mass + 'g')) + '</div></div><div class="card__price">' + money(p.price) + '</div></div></a>';
+    '</div><div class="card__info"><div><div class="card__name">' + p.name + '</div><div class="card__sub">' + (opts.sub ? opts.sub(p) : (p.code + ' · ' + p.tier)) + '</div><div class="card__dots">' + dots + '</div></div><div class="card__price">' + money(p.price) + '</div></div></a>';
 }
 
 /* ---------------- persistent chrome ---------------- */
@@ -915,8 +956,8 @@ function initShop(query) {
     let list = PRODUCTS.filter((p) => active === "all" || p.category === active);
     if (sort === "price ↑") list.sort((a, b) => a.price - b.price); else if (sort === "price ↓") list.sort((a, b) => b.price - a.price);
     else if (sort === "mass ↑") list.sort((a, b) => a.mass - b.mass); else if (sort === "mass ↓") list.sort((a, b) => b.mass - a.mass);
-    else list.sort((a, b) => (b.featured - a.featured) || a.code.localeCompare(b.code));
-    grid.innerHTML = list.map((p) => cardHTML(p, { quick: true, sub: (x) => x.code + " · " + x.category })).join("");
+    else list.sort((a, b) => ((b.featured ? 1 : 0) - (a.featured ? 1 : 0)) || a.code.localeCompare(b.code));
+    grid.innerHTML = list.map((p) => cardHTML(p, { quick: true, sub: (x) => x.code + " · " + x.tier })).join("");
     if (count) count.textContent = String(list.length).padStart(2, "0");
   }
   filters.addEventListener("click", (e) => {
@@ -930,26 +971,52 @@ function initShop(query) {
 function initProduct(id) {
   const root = document.querySelector("[data-pdp]"); if (!root) return;
   const p = getProduct(id) || PRODUCTS[0];
-  const shots = p.images ? p.images.map((src) => '<div class="pdp__shot"><img src="' + src + '" alt="' + p.name + '"></div>').join("") : [0, 1, 2].map((v) => '<div class="pdp__shot"><img src="' + artURI(p, v) + '" alt="' + p.name + ' view ' + (v + 1) + '"></div>').join("");
+  document.title = p.name + " — ounce";
+  let color = p.colors[0]; let size = null;
   const soldOut = p.sizes.every((s) => !s[1]);
-  root.innerHTML = '<div class="pdp__gallery">' + shots + '</div><div class="pdp__panel"><div class="pdp__eyebrow"><span class="label">' + p.code + ' · ' + p.category + '</span><span class="label" style="color:var(--signal)">' + p.mass + ' g</span></div><h1 class="pdp__title">' + p.name + '</h1><div class="pdp__price">' + money(p.price) + ' · ' + p.colorway + '</div><p class="pdp__desc">' + p.desc + '</p><div class="label">Size</div><div class="sizes">' + p.sizes.map((s) => '<button class="size" data-size="' + s[0] + '" data-oos="' + (!s[1]) + '">' + s[0] + '</button>').join("") + '</div><div class="size-note" data-note></div><div class="pdp__buy"><button class="btn btn--block" data-add ' + (soldOut ? "disabled" : "") + '>' + (soldOut ? "Sold Out" : "Add to Cart") + '</button></div><dl class="pdp__spec" style="margin-top:28px"><div><dt>Fabric</dt><dd>' + p.fabric + '</dd></div><div><dt>Fit</dt><dd>' + p.fit + '</dd></div><div><dt>Mass</dt><dd>' + p.mass + ' g · ' + (p.mass / 28.3495).toFixed(1) + ' oz</dd></div><div><dt>Made in</dt><dd>' + p.madeIn + '</dd></div><div><dt>Colourway</dt><dd>' + p.colorway + '</dd></div></dl></div>';
-  let chosen = null; const note = root.querySelector("[data-note]");
-  root.querySelectorAll("[data-size]").forEach((btn) => { if (btn.dataset.oos === "true") return; btn.addEventListener("click", () => { root.querySelectorAll("[data-size]").forEach((b) => b.removeAttribute("data-active")); btn.setAttribute("data-active", "true"); chosen = btn.dataset.size; note.textContent = ""; }); });
+  const img = (c) => (p.images?.[c]?.[0] || artURI(p, 0, { color: c }));
+
+  root.innerHTML =
+    '<div class="pdp__gallery"><div class="pdp__main"><img data-main src="' + img(color) + '" alt="' + p.name + ' — ' + color + '"></div><div class="pdp__thumbs">' +
+      p.colors.map((c) => '<button class="pdp__thumb" data-thumb="' + c + '" data-active="' + (c === color) + '" aria-label="' + c + '"><img src="' + img(c) + '" alt="' + p.name + ' — ' + c + '"></button>').join("") +
+    '</div></div>' +
+    '<div class="pdp__panel"><div class="pdp__eyebrow"><span class="label">' + p.code + ' · ' + p.category + '</span><span class="label" style="color:var(--signal)">' + p.mass + ' g</span></div>' +
+    '<h1 class="pdp__title">' + p.name + '</h1><div class="pdp__price">' + money(p.price) + ' · ' + p.tier + ' weight</div><p class="pdp__desc">' + p.desc + '</p>' +
+    '<div class="label">Colour — <span data-color-name>' + color + '</span></div><div class="colors">' +
+      p.colors.map((c) => '<button class="swatch" data-swatch="' + c + '" data-active="' + (c === color) + '" style="background:' + colorSwatch(c) + '" aria-label="' + c + '"></button>').join("") +
+    '</div>' +
+    '<div class="label" style="margin-top:20px">Size</div><div class="sizes">' +
+      p.sizes.map((s) => '<button class="size" data-size="' + s[0] + '" data-oos="' + (!s[1]) + '">' + s[0] + '</button>').join("") +
+    '</div><div class="size-note" data-note></div>' +
+    '<div class="pdp__buy"><button class="btn btn--block" data-add ' + (soldOut ? "disabled" : "") + '>' + (soldOut ? "Sold Out" : "Add to Cart") + '</button></div>' +
+    '<dl class="pdp__spec" style="margin-top:28px"><div><dt>Fabric</dt><dd>' + p.fabric + '</dd></div><div><dt>Fit</dt><dd>' + p.fit + '</dd></div><div><dt>Mass</dt><dd>' + p.mass + ' g · ' + (p.mass / 28.3495).toFixed(1) + ' oz</dd></div><div><dt>Made in</dt><dd>' + p.madeIn + '</dd></div><div><dt>Colour</dt><dd data-spec-color>' + color + '</dd></div></dl></div>';
+
+  const mainImg = root.querySelector("[data-main]"); const note = root.querySelector("[data-note]");
+  function selectColor(c) {
+    color = c; mainImg.src = img(c);
+    root.querySelectorAll("[data-thumb]").forEach((t) => t.setAttribute("data-active", t.dataset.thumb === c));
+    root.querySelectorAll("[data-swatch]").forEach((t) => t.setAttribute("data-active", t.dataset.swatch === c));
+    root.querySelector("[data-color-name]").textContent = c; root.querySelector("[data-spec-color]").textContent = c;
+  }
+  root.querySelectorAll("[data-thumb]").forEach((b) => b.addEventListener("click", () => selectColor(b.dataset.thumb)));
+  root.querySelectorAll("[data-swatch]").forEach((b) => b.addEventListener("click", () => selectColor(b.dataset.swatch)));
+  root.querySelectorAll("[data-size]").forEach((btn) => { if (btn.dataset.oos === "true") return; btn.addEventListener("click", () => { root.querySelectorAll("[data-size]").forEach((b) => b.removeAttribute("data-active")); btn.setAttribute("data-active", "true"); size = btn.dataset.size; note.textContent = ""; }); });
   const avail = p.sizes.filter((s) => s[1]); if (avail.length === 1) { root.querySelector('[data-size="' + avail[0][0] + '"]')?.click(); }
-  root.querySelector("[data-add]")?.addEventListener("click", () => { if (soldOut) return; if (!chosen) { note.textContent = "Select a size first"; return; } Cart.add(p.id, chosen, 1); });
+  root.querySelector("[data-add]")?.addEventListener("click", () => { if (soldOut) return; if (!size) { note.textContent = "Select a size first"; return; } Cart.add(p.id, size, color, 1); });
+
   const related = document.querySelector("[data-related]");
-  if (related) { const rel = PRODUCTS.filter((x) => x.id !== p.id && x.category === p.category); const pool = (rel.length ? rel : PRODUCTS.filter((x) => x.id !== p.id)).slice(0, 4); related.innerHTML = pool.map((x) => cardHTML(x, { sub: (y) => y.code })).join(""); }
+  if (related) { const rel = PRODUCTS.filter((x) => x.id !== p.id && x.category === p.category); const pool = (rel.length ? rel : PRODUCTS.filter((x) => x.id !== p.id)).slice(0, 4); related.innerHTML = pool.map((x) => cardHTML(x, { sub: (y) => y.code + " · " + y.tier })).join(""); }
 }
 
 function initLookbook() {
   document.querySelectorAll("[data-art]").forEach((el) => {
-    const [id, v] = el.dataset.art.split(":"); const p = getProduct(id); if (!p) return;
-    const img = document.createElement("img"); img.src = artURI(p, Number(v) || 0); img.alt = p.name; img.loading = "lazy"; el.appendChild(img);
+    const [id, colr] = el.dataset.art.split(":"); const p = getProduct(id); if (!p) return;
+    const im = document.createElement("img"); im.src = artURI(p, 0, { color: colr || p.colors[0] }); im.alt = p.name; im.loading = "lazy"; el.appendChild(im);
     if (el.dataset.cap) { const c = document.createElement("span"); c.className = "look__cap"; c.textContent = el.dataset.cap; el.appendChild(c); }
   });
 }
 
-function initAbout() { const el = document.querySelector("[data-about-art]"); if (el) el.src = artURI(getProduct("oz-01"), 1); }
+function initAbout() { const el = document.querySelector("[data-about-art]"); if (el) el.src = artURI(getProduct("hoodie-heavy"), 0, { color: "Black" }); }
 
 /* ---------------- router ---------------- */
 const app = document.getElementById("app");

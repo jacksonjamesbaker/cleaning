@@ -17,7 +17,7 @@ serverless function for real Stripe payments.
 |------|------|-----------|
 | **Landing** | `index.html` | Abstract soft-physics canvas of floating "weights" (drag, push, click to drop), unit ticker, editorial statements, featured rail |
 | **Shop** | `shop.html` | Filterable / sortable product grid |
-| **Product** | `product.html?id=oz-01` | Gallery, size picker, spec table (mass in g **and** oz), add-to-cart, related |
+| **Product** | `product.html?id=hoodie-heavy` | Colour picker (Black/Grey/White), size picker, spec table (mass in g **and** oz), add-to-cart, related |
 | **Lookbook** | `lookbook.html` | Generative editorial "Volume 01" grid |
 | **About** | `about.html` | Brand story + five-point manifesto |
 | **Cart** | injected everywhere | Slide-over cart, localStorage-persisted, live subtotal + total mass |
@@ -29,7 +29,8 @@ intentional with zero assets. To drop in real photography, add an `images`
 array to any product in `assets/js/products.js`:
 
 ```js
-{ id: "oz-01", name: "Heavyweight Hoodie", images: ["/assets/img/oz-01-a.jpg", "/assets/img/oz-01-b.jpg"], ... }
+{ id: "hoodie-heavy", name: "Heavyweight Hoodie",
+  images: { Black: ["/assets/img/hoodie-heavy-black.jpg"], Grey: [...], White: [...] }, ... }
 ```
 
 The store uses those and ignores the generated art automatically.

@@ -26,16 +26,17 @@
     else if (sort === "price ↓") list.sort((a, b) => b.price - a.price);
     else if (sort === "mass ↑") list.sort((a, b) => a.mass - b.mass);
     else if (sort === "mass ↓") list.sort((a, b) => b.mass - a.mass);
-    else list.sort((a, b) => (b.featured - a.featured) || a.code.localeCompare(b.code));
+    else list.sort((a, b) => ((b.featured ? 1 : 0) - (a.featured ? 1 : 0)) || a.code.localeCompare(b.code));
 
     grid.innerHTML = list.map(card).join("");
     if (count) count.textContent = String(list.length).padStart(2, "0");
   }
 
   function card(p) {
-    const primary = p.images?.[0] || OUNCE.artURI(p, 0);
-    const alt = p.images?.[1] || OUNCE.artURI(p, 1);
+    const primary = p.images?.[p.colors[0]]?.[0] || OUNCE.artURI(p, 0, { color: p.colors[0] });
+    const alt = p.images?.[p.colors[1]]?.[0] || OUNCE.artURI(p, 0, { color: p.colors[1] });
     const sold = p.sizes.every((s) => !s[1]);
+    const dots = p.colors.map((c) => `<span class="card__dot" style="background:${OUNCE.colorSwatch(c)}"></span>`).join("");
     return `<a class="card" href="/product.html?id=${p.id}">
       <div class="card__media">
         <img src="${primary}" alt="${p.name}" loading="lazy">
@@ -47,7 +48,8 @@
       <div class="card__info">
         <div>
           <div class="card__name">${p.name}</div>
-          <div class="card__sub">${p.code} · ${p.category}</div>
+          <div class="card__sub">${p.code} · ${p.tier}</div>
+          <div class="card__dots">${dots}</div>
         </div>
         <div class="card__price">${OUNCE.money(p.price)}</div>
       </div>

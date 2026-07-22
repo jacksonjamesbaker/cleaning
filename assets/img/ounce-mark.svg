@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="ounce mark">
+  <circle cx="100" cy="100" r="86" fill="none" stroke="#141412" stroke-width="8"/>
+  <circle cx="100" cy="100" r="72" fill="none" stroke="#141412" stroke-width="1.5" opacity="0.4"/>
+  <text x="100" y="126" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="72" fill="#E8451F">oz</text>
+</svg>

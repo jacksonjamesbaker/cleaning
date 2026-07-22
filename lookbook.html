@@ -21,11 +21,11 @@
     <!-- generative editorial grid -->
     <div class="wrap">
       <div class="look-grid">
-        <div class="look s7 t169" data-art="oz-01:0" data-cap="OZ—01 · Heavyweight"></div>
-        <div class="look s5 t45" data-art="oz-04:2" data-cap="OZ—04 · Shell"></div>
-        <div class="look s4 t34" data-art="oz-02:1" data-cap="OZ—02 · 14oz"></div>
-        <div class="look s4 t34" data-art="oz-06:0" data-cap="OZ—06 · Knit"></div>
-        <div class="look s4 t34" data-art="oz-08:1" data-cap="OZ—08 · Overshirt"></div>
+        <div class="look s7 t169" data-art="hoodie-heavy:Black" data-cap="OZ·H3 · Heavyweight Hoodie"></div>
+        <div class="look s5 t45" data-art="tee-mid:White" data-cap="OZ·T2 · Midweight Tee"></div>
+        <div class="look s4 t34" data-art="pant-mid:Grey" data-cap="OZ·P2 · Sweatpant"></div>
+        <div class="look s4 t34" data-art="beanie-mid:Grey" data-cap="OZ·B2 · Fisherman"></div>
+        <div class="look s4 t34" data-art="cap-mid:Black" data-cap="OZ·C2 · Dad Cap"></div>
       </div>
     </div>
 
@@ -35,11 +35,11 @@
 
     <div class="wrap">
       <div class="look-grid">
-        <div class="look s6 t45" data-art="oz-05:0" data-cap="OZ—05 · Ballast"></div>
-        <div class="look s6 t45" data-art="oz-03:1" data-cap="OZ—03 · Gram Tee"></div>
-        <div class="look s12 t169 look--wide" data-art="oz-01:1" data-cap="Bone on bone"></div>
-        <div class="look s5 t34" data-art="oz-07:0" data-cap="OZ—07 · Troy"></div>
-        <div class="look s7 t45" data-art="oz-10:2" data-cap="OZ—10 · Standard"></div>
+        <div class="look s6 t45" data-art="short-mid:White" data-cap="OZ·S2 · Sweatshort"></div>
+        <div class="look s6 t45" data-art="tee-heavy:Black" data-cap="OZ·T3 · Heavyweight Tee"></div>
+        <div class="look s12 t169 look--wide" data-art="hoodie-mid:Grey" data-cap="Grey on grey"></div>
+        <div class="look s5 t34" data-art="beanie-heavy:Black" data-cap="OZ·B3 · Fisherman"></div>
+        <div class="look s7 t45" data-art="pant-heavy:White" data-cap="OZ·P3 · Sweatpant"></div>
       </div>
     </div>
 
@@ -55,11 +55,11 @@
   <script>
     // fill the editorial grid with generative artwork
     document.querySelectorAll("[data-art]").forEach((el) => {
-      const [id, v] = el.dataset.art.split(":");
+      const [id, colr] = el.dataset.art.split(":");
       const p = OUNCE.getProduct(id);
       if (!p) return;
       const img = document.createElement("img");
-      img.src = OUNCE.artURI(p, Number(v) || 0);
+      img.src = OUNCE.artURI(p, 0, { color: colr || p.colors[0] });
       img.alt = p.name; img.loading = "lazy";
       el.appendChild(img);
       if (el.dataset.cap) {
